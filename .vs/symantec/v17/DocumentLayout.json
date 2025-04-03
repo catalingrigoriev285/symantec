@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\catal\\Documents\\GitHub\\symantec\\symantec\\",
+  "WorkspaceRootPath": "C:\\Users\\catal\\Documents\\GitHub\\symantec\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{AD961E87-4737-43D0-B03A-BF486CCD2134}|symantec.vcxproj|C:\\Users\\catal\\Documents\\GitHub\\symantec\\symantec\\symantec.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{AD961E87-4737-43D0-B03A-BF486CCD2134}|symantec.vcxproj|C:\\Users\\catal\\Documents\\GitHub\\symantec\\symantec.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{AD961E87-4737-43D0-B03A-BF486CCD2134}|symantec.vcxproj|solutionrelative:symantec.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
@@ -20,11 +20,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "symantec.cpp",
-              "DocumentMoniker": "C:\\Users\\catal\\Documents\\GitHub\\symantec\\symantec\\symantec.cpp",
+              "DocumentMoniker": "C:\\Users\\catal\\Documents\\GitHub\\symantec\\symantec.cpp",
               "RelativeDocumentMoniker": "symantec.cpp",
-              "ToolTip": "C:\\Users\\catal\\Documents\\GitHub\\symantec\\symantec\\symantec.cpp",
+              "ToolTip": "C:\\Users\\catal\\Documents\\GitHub\\symantec\\symantec.cpp",
               "RelativeToolTip": "symantec.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADoAAAAAAAAAAAAYwFAAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-04-03T09:08:48.827Z",
               "EditorCaption": ""

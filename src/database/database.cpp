@@ -13,4 +13,13 @@ namespace Database {
             std::cerr << "SQLite connection failed: " << e.what() << std::endl;
         }
     }
+
+    void Database::createSQLiteDatabase() {
+        try {
+            SQLite::Database db(db_path, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+            std::cout << "SQLite database created successfully." << std::endl;
+        } catch (const SQLite::Exception& e) {
+            std::cerr << "SQLite database creation failed: " << e.what() << std::endl;
+        }
+    }
 }

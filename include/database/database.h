@@ -29,6 +29,7 @@ namespace Database {
                 : db_host(host), db_name(name), db_user(user), db_password(password), db_port(port), db_type(type), db_path(path) {};
 
             void verifySQLiteConnection();
+            void createSQLiteDatabase();
 
             ~Database();
     };

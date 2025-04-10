@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
         {
             std::cout << "Database:" << std::endl;
             std::cout << "  -dbVerifySQLiteConnection\t<file>\tVerify SQLite database connection" << std::endl;
+            std::cout << "  -dbCreateSQLiteDatabase\t<file>\tCreate SQLite database" << std::endl;
             std::cout << std::endl;
             std::cout << "File Signature:" << std::endl;
             std::cout << "  -getFileSignature1\t<file>\tGet SHA1 signature of the file" << std::endl;
@@ -25,44 +26,46 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::string command = argv[1];
-    std::string filePath = argv[2];
-
     Scanner::SignatureScanner scanner;
 
-    if (command == "-dbVerifySQLiteConnection")
+    if (std::string(argv[1]) == "-dbVerifySQLiteConnection")
     {
-        Database::Database db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::SQLITE, filePath);
+        Database::Database db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::SQLITE, argv[2]);
         db.verifySQLiteConnection();
     }
-    else if (command == "-getFileSignature1")
+    else if (std::string(argv[1]) == "-dbCreateSQLiteDatabase")
     {
-        Scanner::Signature signature = scanner.getFileSignatureSHA1(filePath);
+        Database::Database db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::SQLITE, argv[2]);
+        db.createSQLiteDatabase();
+    }
+    else if (std::string(argv[1]) == "-getFileSignature1")
+    {
+        Scanner::Signature signature = scanner.getFileSignatureSHA1(argv[2]);
         std::cout << "SHA1 Signature: " << signature << std::endl;
     }
-    else if (command == "-getFileSignature224")
+    else if (std::string(argv[1]) == "-getFileSignature224")
     {
-        Scanner::Signature signature = scanner.getFileSignatureSHA224(filePath);
+        Scanner::Signature signature = scanner.getFileSignatureSHA224(argv[2]);
         std::cout << "SHA224 Signature: " << signature << std::endl;
     }
-    else if (command == "-getFileSignature256")
+    else if (std::string(argv[1]) == "-getFileSignature256")
     {
-        Scanner::Signature signature = scanner.getFileSignatureSHA256(filePath);
+        Scanner::Signature signature = scanner.getFileSignatureSHA256(argv[2]);
         std::cout << "SHA256 Signature: " << signature << std::endl;
     }
-    else if (command == "-getFileSignature384")
+    else if (std::string(argv[1]) == "-getFileSignature384")
     {
-        Scanner::Signature signature = scanner.getFileSignatureSHA384(filePath);
+        Scanner::Signature signature = scanner.getFileSignatureSHA384(argv[2]);
         std::cout << "SHA384 Signature: " << signature << std::endl;
     }
-    else if (command == "-getFileSignature512")
+    else if (std::string(argv[1]) == "-getFileSignature512")
     {
-        Scanner::Signature signature = scanner.getFileSignatureSHA512(filePath);
+        Scanner::Signature signature = scanner.getFileSignatureSHA512(argv[2]);
         std::cout << "SHA512 Signature: " << signature << std::endl;
     }
     else
     {
-        std::cerr << "Unknown command: " << command << std::endl;
+        std::cerr << "Unknown command: " << argv[1] << std::endl;
         return 1;
     }
 

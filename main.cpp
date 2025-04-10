@@ -3,14 +3,12 @@
 #include "include/core/scanner/signature_scanner.h"
 
 void printHelp(const std::string& programName) {
-    std::cout << "Usage: " << programName << " <command> <filePath>" << std::endl;
     std::cout << "Commands:" << std::endl;
-    std::cout << "  -getFileSignature1       Get SHA1 signature of the file" << std::endl;
-    std::cout << "  -getFileSignature224     Get SHA224 signature of the file" << std::endl;
-    std::cout << "  -getFileSignature256     Get SHA256 signature of the file" << std::endl;
-    std::cout << "  -getFileSignature384     Get SHA384 signature of the file" << std::endl;
-    std::cout << "  -getFileSignature512     Get SHA512 signature of the file" << std::endl;
-    std::cout << "  -help                    Display this help message" << std::endl;
+    std::cout << "  -getFileSignature1\t<file>\tGet SHA1 signature of the file" << std::endl;
+    std::cout << "  -getFileSignature224\t<file>\tGet SHA224 signature of the file" << std::endl;
+    std::cout << "  -getFileSignature256\t<file>\tGet SHA256 signature of the file" << std::endl;
+    std::cout << "  -getFileSignature384\t<file>\tGet SHA384 signature of the file" << std::endl;
+    std::cout << "  -getFileSignature512\t<file>\tGet SHA512 signature of the file" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -19,7 +17,7 @@ int main(int argc, char* argv[]) {
             printHelp(argv[0]);
             return 0;
         }
-        std::cerr << "Invalid arguments. Use -help for usage information." << std::endl;
+
         return 1;
     }
 

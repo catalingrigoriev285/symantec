@@ -10,7 +10,7 @@
 
 #include <openssl/sha.h>
 
-namespace scanner
+namespace Scanner
 {
     enum class HashAlgorithm
     {

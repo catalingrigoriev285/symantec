@@ -24,22 +24,22 @@ int main(int argc, char* argv[]) {
     std::string command = argv[1];
     std::string filePath = argv[2];
 
-    scanner::SignatureScanner scanner;
+    Scanner::SignatureScanner scanner;
 
     if (command == "-getFileSignature1") {
-        scanner::Signature signature = scanner.getFileSignatureSHA1(filePath);
+        Scanner::Signature signature = scanner.getFileSignatureSHA1(filePath);
         std::cout << "SHA1 Signature: " << signature << std::endl;
     } else if (command == "-getFileSignature224") {
-        scanner::Signature signature = scanner.getFileSignatureSHA224(filePath);
+        Scanner::Signature signature = scanner.getFileSignatureSHA224(filePath);
         std::cout << "SHA224 Signature: " << signature << std::endl;
     } else if (command == "-getFileSignature256") {
-        scanner::Signature signature = scanner.getFileSignatureSHA256(filePath);
+        Scanner::Signature signature = scanner.getFileSignatureSHA256(filePath);
         std::cout << "SHA256 Signature: " << signature << std::endl;
     } else if (command == "-getFileSignature384") {
-        scanner::Signature signature = scanner.getFileSignatureSHA384(filePath);
+        Scanner::Signature signature = scanner.getFileSignatureSHA384(filePath);
         std::cout << "SHA384 Signature: " << signature << std::endl;
     } else if (command == "-getFileSignature512") {
-        scanner::Signature signature = scanner.getFileSignatureSHA512(filePath);
+        Scanner::Signature signature = scanner.getFileSignatureSHA512(filePath);
         std::cout << "SHA512 Signature: " << signature << std::endl;
     } else {
         std::cerr << "Unknown command: " << command << std::endl;

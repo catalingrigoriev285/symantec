@@ -1,6 +1,6 @@
 #include "../../../include/core/scanner/signature_scanner.h"
 
-namespace scanner
+namespace Scanner
 {
     Signature::Signature(const std::string &name, const std::string &description, const std::vector<unsigned char> &hash, HashAlgorithm algorithm)
         : name(name), description(description), hash(hash), algorithm(algorithm), created_at(std::time(nullptr)), updated_at(std::time(nullptr)) {}

@@ -23,7 +23,7 @@ namespace scanner
 
     class Signature
     {
-    private:
+    public:
         std::string name;
         std::string description;
         std::vector<unsigned char> hash;
@@ -43,11 +43,27 @@ namespace scanner
         SignatureScanner(const std::string &name, const std::string &description, const std::vector<unsigned char> &hash, HashAlgorithm algorithm);
         ~SignatureScanner() override;
 
-        std::vector<unsigned char> getFileSignatureSHA1(const std::string &filePath);
-        std::vector<unsigned char> getFileSignatureSHA224(const std::string &filePath);
-        std::vector<unsigned char> getFileSignatureSHA256(const std::string &filePath);
-        std::vector<unsigned char> getFileSignatureSHA384(const std::string &filePath);
-        std::vector<unsigned char> getFileSignatureSHA512(const std::string &filePath);
+        Signature getFileSignatureSHA1(const std::string &filePath);
+        Signature getFileSignatureSHA224(const std::string &filePath);
+        Signature getFileSignatureSHA256(const std::string &filePath);
+        Signature getFileSignatureSHA384(const std::string &filePath);
+        Signature getFileSignatureSHA512(const std::string &filePath);
+        
+        friend std::ostream &operator<<(std::ostream &os, const Signature &signature)
+        {
+            os << "Signature Name: " << signature.name << "\n"
+               << "Description: " << signature.description << "\n"
+               << "Hash: ";
+            for (const auto &byte : signature.hash)
+            {
+                os << std::hex << static_cast<int>(byte);
+            }
+            os << "\n"
+               << "Hash Algorithm: " << static_cast<int>(signature.algorithm) << "\n"
+               << "Created At: " << std::ctime(&signature.created_at)
+               << "Updated At: " << std::ctime(&signature.updated_at);
+            return os;
+        };
     };
 };
 

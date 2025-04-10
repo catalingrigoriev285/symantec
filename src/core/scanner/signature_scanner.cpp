@@ -12,13 +12,13 @@ namespace scanner
         : Signature(name, description, hash, algorithm) {}
     SignatureScanner::~SignatureScanner() {}
 
-    std::vector<unsigned char> SignatureScanner::getFileSignatureSHA1(const std::string &filePath)
+    Signature SignatureScanner::getFileSignatureSHA1(const std::string &filePath)
     {
         std::ifstream file(filePath, std::ios::binary);
         if (!file)
         {
             std::cerr << "Failed to open file: " << filePath << "\n";
-            return {};
+            return Signature("SHA1", "Failed to compute SHA1", {}, HashAlgorithm::SHA1);
         }
 
         size_t digestLength = SHA_DIGEST_LENGTH;
@@ -45,16 +45,16 @@ namespace scanner
             throw std::runtime_error("SHA1_Final failed");
         }
 
-        return hash;
+        return Signature("SHA1", "SHA1 file signature", hash, HashAlgorithm::SHA1);
     }
 
-    std::vector<unsigned char> SignatureScanner::getFileSignatureSHA224(const std::string &filePath)
+    Signature SignatureScanner::getFileSignatureSHA224(const std::string &filePath)
     {
         std::ifstream file(filePath, std::ios::binary);
         if (!file)
         {
             std::cerr << "Failed to open file: " << filePath << "\n";
-            return {};
+            return Signature("SHA224", "Failed to compute SHA224", {}, HashAlgorithm::SHA224);
         }
 
         size_t digestLength = SHA224_DIGEST_LENGTH;
@@ -81,16 +81,16 @@ namespace scanner
             throw std::runtime_error("SHA224_Final failed");
         }
 
-        return hash;
+        return Signature("SHA224", "SHA224 file signature", hash, HashAlgorithm::SHA224);
     }
 
-    std::vector<unsigned char> SignatureScanner::getFileSignatureSHA256(const std::string &filePath)
+    Signature SignatureScanner::getFileSignatureSHA256(const std::string &filePath)
     {
         std::ifstream file(filePath, std::ios::binary);
         if (!file)
         {
             std::cerr << "Failed to open file: " << filePath << "\n";
-            return {};
+            return Signature("SHA256", "Failed to compute SHA256", {}, HashAlgorithm::SHA256);
         }
 
         size_t digestLength = SHA256_DIGEST_LENGTH;
@@ -117,16 +117,16 @@ namespace scanner
             throw std::runtime_error("SHA256_Final failed");
         }
 
-        return hash;
+        return Signature("SHA256", "SHA256 file signature", hash, HashAlgorithm::SHA256);
     }
 
-    std::vector<unsigned char> SignatureScanner::getFileSignatureSHA384(const std::string &filePath)
+    Signature SignatureScanner::getFileSignatureSHA384(const std::string &filePath)
     {
         std::ifstream file(filePath, std::ios::binary);
         if (!file)
         {
             std::cerr << "Failed to open file: " << filePath << "\n";
-            return {};
+            return Signature("SHA384", "Failed to compute SHA384", {}, HashAlgorithm::SHA384);
         }
 
         size_t digestLength = SHA384_DIGEST_LENGTH;
@@ -153,16 +153,16 @@ namespace scanner
             throw std::runtime_error("SHA384_Final failed");
         }
 
-        return hash;
+        return Signature("SHA384", "SHA384 file signature", hash, HashAlgorithm::SHA384);
     }
 
-    std::vector<unsigned char> SignatureScanner::getFileSignatureSHA512(const std::string &filePath)
+    Signature SignatureScanner::getFileSignatureSHA512(const std::string &filePath)
     {
         std::ifstream file(filePath, std::ios::binary);
         if (!file)
         {
             std::cerr << "Failed to open file: " << filePath << "\n";
-            return {};
+            return Signature("SHA512", "Failed to compute SHA512", {}, HashAlgorithm::SHA512);
         }
 
         size_t digestLength = SHA512_DIGEST_LENGTH;
@@ -189,6 +189,6 @@ namespace scanner
             throw std::runtime_error("SHA512_Final failed");
         }
 
-        return hash;
+        return Signature("SHA512", "SHA512 file signature", hash, HashAlgorithm::SHA512);
     }
 }

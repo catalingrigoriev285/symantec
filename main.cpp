@@ -11,6 +11,11 @@ int main(int argc, char *argv[])
         if (argc == 2 && std::string(argv[1]) == "-help")
         {
             std::cout << "Database:" << std::endl;
+            std::cout << " Raw:" << std::endl;
+            std::cout << "  -dbVerifyRawConnection\t<file>\tVerify raw database connection" << std::endl;
+            std::cout << "  -dbCreateRawDatabase\t\t<file>\tCreate raw database" << std::endl;
+            std::cout << std::endl;
+            std::cout << " SQLite:" << std::endl;
             std::cout << "  -dbVerifySQLiteConnection\t<file>\tVerify SQLite database connection" << std::endl;
             std::cout << "  -dbCreateSQLiteDatabase\t<file>\tCreate SQLite database" << std::endl;
             std::cout << std::endl;
@@ -28,7 +33,17 @@ int main(int argc, char *argv[])
 
     Scanner::SignatureScanner scanner;
 
-    if (std::string(argv[1]) == "-dbVerifySQLiteConnection")
+    if (std::string(argv[1]) == "-dbVerifyRawConnection")
+    {
+        Database::RawDatabase db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::Raw, argv[2]);
+        db.verifyConnection();
+    }
+    else if (std::string(argv[1]) == "-dbCreateRawDatabase")
+    {
+        Database::RawDatabase db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::Raw, argv[2]);
+        db.createDatabase();
+    }
+    else if (std::string(argv[1]) == "-dbVerifySQLiteConnection")
     {
         Database::SQLiteDatabase db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::SQLite, argv[2]);
         db.verifyConnection();

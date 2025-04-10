@@ -2,6 +2,7 @@
 #define DATABASE_H
 
 #include <iostream>
+#include <fstream>
 #include <string>
 
 #include <SQLiteCpp/SQLiteCpp.h>
@@ -30,6 +31,20 @@ namespace Database {
                 : db_host(host), db_name(name), db_user(user), db_password(password), db_port(port), db_type(type), db_path(path) {};
 
             ~Database();
+
+            void verifyConnection();
+            void createDatabase();
+    };
+
+    class RawDatabase : public Database {
+        public:
+            RawDatabase() : Database("localhost", "test.db", "user", "password", 0, DatabaseType::Raw, nullptr){};
+            RawDatabase(const std::string& host, const std::string& name, const std::string& user, const std::string& password, int port, DatabaseType type, const std::string& path)
+                : Database(host, name, user, password, port, type, path) {};
+            ~RawDatabase();
+
+            void verifyConnection();
+            void createDatabase();
     };
 
     class SQLiteDatabase : public Database {

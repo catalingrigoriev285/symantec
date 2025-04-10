@@ -8,7 +8,8 @@
 
 namespace Database {
     enum class DatabaseType {
-        SQLITE,
+        Raw,
+        SQLite,
     };
 
     class Database {
@@ -19,19 +20,27 @@ namespace Database {
             std::string db_password;
             int db_port;
 
+        public:
             std::string db_path;
 
             DatabaseType db_type;
 
-        public:
             Database();
             Database(const std::string& host, const std::string& name, const std::string& user, const std::string& password, int port, DatabaseType type, const std::string& path)
                 : db_host(host), db_name(name), db_user(user), db_password(password), db_port(port), db_type(type), db_path(path) {};
 
-            void verifySQLiteConnection();
-            void createSQLiteDatabase();
-
             ~Database();
+    };
+
+    class SQLiteDatabase : public Database {
+        public:
+            SQLiteDatabase() : Database("localhost", "test.db", "user", "password", 0, DatabaseType::SQLite, nullptr){};
+            SQLiteDatabase(const std::string& host, const std::string& name, const std::string& user, const std::string& password, int port, DatabaseType type, const std::string& path)
+                : Database(host, name, user, password, port, type, path) {};
+            ~SQLiteDatabase();
+
+            void verifyConnection();
+            void createDatabase();
     };
 }
 

@@ -30,13 +30,13 @@ int main(int argc, char *argv[])
 
     if (std::string(argv[1]) == "-dbVerifySQLiteConnection")
     {
-        Database::Database db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::SQLITE, argv[2]);
-        db.verifySQLiteConnection();
+        Database::SQLiteDatabase db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::SQLite, argv[2]);
+        db.verifyConnection();
     }
     else if (std::string(argv[1]) == "-dbCreateSQLiteDatabase")
     {
-        Database::Database db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::SQLITE, argv[2]);
-        db.createSQLiteDatabase();
+        Database::SQLiteDatabase db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::SQLite, argv[2]);
+        db.createDatabase();
     }
     else if (std::string(argv[1]) == "-getFileSignature1")
     {

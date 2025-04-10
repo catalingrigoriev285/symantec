@@ -1,11 +1,12 @@
 #include "../../include/database/database.h"
 
 namespace Database {
-    Database::Database() : db_host("localhost"), db_name("test.db"), db_user("user"), db_password("password"), db_port(0), db_type(DatabaseType::SQLITE), db_path("") {}
-
+    Database::Database() : db_host("localhost"), db_name("test.db"), db_user("user"), db_password("password"), db_port(0), db_type(DatabaseType::SQLite), db_path("") {}
     Database::~Database() {}
 
-    void Database::verifySQLiteConnection() {
+    SQLiteDatabase::~SQLiteDatabase() {}
+
+    void SQLiteDatabase::verifyConnection() {
         try {
             SQLite::Database db(db_path, SQLite::OPEN_READONLY);
             std::cout << "SQLite connection verified successfully." << std::endl;
@@ -14,7 +15,7 @@ namespace Database {
         }
     }
 
-    void Database::createSQLiteDatabase() {
+    void SQLiteDatabase::createDatabase() {
         try {
             SQLite::Database db(db_path, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
             std::cout << "SQLite database created successfully." << std::endl;

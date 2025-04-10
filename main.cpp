@@ -1,20 +1,24 @@
 #include <iostream>
 #include <string>
+
 #include "include/core/scanner/signature_scanner.h"
+#include "include/database/database.h"
 
-void printHelp(const std::string& programName) {
-    std::cout << "Commands:" << std::endl;
-    std::cout << "  -getFileSignature1\t<file>\tGet SHA1 signature of the file" << std::endl;
-    std::cout << "  -getFileSignature224\t<file>\tGet SHA224 signature of the file" << std::endl;
-    std::cout << "  -getFileSignature256\t<file>\tGet SHA256 signature of the file" << std::endl;
-    std::cout << "  -getFileSignature384\t<file>\tGet SHA384 signature of the file" << std::endl;
-    std::cout << "  -getFileSignature512\t<file>\tGet SHA512 signature of the file" << std::endl;
-}
-
-int main(int argc, char* argv[]) {
-    if (argc != 3) {
-        if (argc == 2 && std::string(argv[1]) == "-help") {
-            printHelp(argv[0]);
+int main(int argc, char *argv[])
+{
+    if (argc != 3)
+    {
+        if (argc == 2 && std::string(argv[1]) == "-help")
+        {
+            std::cout << "Database:" << std::endl;
+            std::cout << "  -dbVerifySQLiteConnection\t<file>\tVerify SQLite database connection" << std::endl;
+            std::cout << std::endl;
+            std::cout << "File Signature:" << std::endl;
+            std::cout << "  -getFileSignature1\t<file>\tGet SHA1 signature of the file" << std::endl;
+            std::cout << "  -getFileSignature224\t<file>\tGet SHA224 signature of the file" << std::endl;
+            std::cout << "  -getFileSignature256\t<file>\tGet SHA256 signature of the file" << std::endl;
+            std::cout << "  -getFileSignature384\t<file>\tGet SHA384 signature of the file" << std::endl;
+            std::cout << "  -getFileSignature512\t<file>\tGet SHA512 signature of the file" << std::endl;
             return 0;
         }
 
@@ -26,22 +30,38 @@ int main(int argc, char* argv[]) {
 
     Scanner::SignatureScanner scanner;
 
-    if (command == "-getFileSignature1") {
+    if (command == "-dbVerifySQLiteConnection")
+    {
+        Database::Database db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::SQLITE, filePath);
+        db.verifySQLiteConnection();
+    }
+    else if (command == "-getFileSignature1")
+    {
         Scanner::Signature signature = scanner.getFileSignatureSHA1(filePath);
         std::cout << "SHA1 Signature: " << signature << std::endl;
-    } else if (command == "-getFileSignature224") {
+    }
+    else if (command == "-getFileSignature224")
+    {
         Scanner::Signature signature = scanner.getFileSignatureSHA224(filePath);
         std::cout << "SHA224 Signature: " << signature << std::endl;
-    } else if (command == "-getFileSignature256") {
+    }
+    else if (command == "-getFileSignature256")
+    {
         Scanner::Signature signature = scanner.getFileSignatureSHA256(filePath);
         std::cout << "SHA256 Signature: " << signature << std::endl;
-    } else if (command == "-getFileSignature384") {
+    }
+    else if (command == "-getFileSignature384")
+    {
         Scanner::Signature signature = scanner.getFileSignatureSHA384(filePath);
         std::cout << "SHA384 Signature: " << signature << std::endl;
-    } else if (command == "-getFileSignature512") {
+    }
+    else if (command == "-getFileSignature512")
+    {
         Scanner::Signature signature = scanner.getFileSignatureSHA512(filePath);
         std::cout << "SHA512 Signature: " << signature << std::endl;
-    } else {
+    }
+    else
+    {
         std::cerr << "Unknown command: " << command << std::endl;
         return 1;
     }

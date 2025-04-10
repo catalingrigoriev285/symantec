@@ -19,12 +19,16 @@ namespace Database {
             std::string db_password;
             int db_port;
 
+            std::string db_path;
+
             DatabaseType db_type;
 
         public:
             Database();
-            Database(const std::string& host, const std::string& name, const std::string& user, const std::string& password, int port, DatabaseType type)
-                : db_host(host), db_name(name), db_user(user), db_password(password), db_port(port), db_type(type){};
+            Database(const std::string& host, const std::string& name, const std::string& user, const std::string& password, int port, DatabaseType type, const std::string& path)
+                : db_host(host), db_name(name), db_user(user), db_password(password), db_port(port), db_type(type), db_path(path) {};
+
+            void verifySQLiteConnection();
 
             ~Database();
     };

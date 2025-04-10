@@ -8,13 +8,22 @@
 
 #include <openssl/sha.h>
 
-namespace scanner {
-    class SignatureScanner {
-        public:
-            SignatureScanner();
-            ~SignatureScanner();
+namespace scanner
+{
+    enum class HashAlgorithm
+    {
+        SHA1,
+        SHA256,
+        SHA512,
+    };
 
-            std::vector<unsigned char> getFileSHA256(const std::string& filePath);
+    class SignatureScanner
+    {
+    public:
+        SignatureScanner();
+        ~SignatureScanner();
+
+        std::vector<unsigned char> getFileHash(const std::string &filePath, HashAlgorithm algorithm);
     };
 };
 

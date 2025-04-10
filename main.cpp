@@ -1,21 +1,37 @@
 #include <iostream>
+#include <SQLiteCpp/SQLiteCpp.h> // SQLiteCpp library
 
 #include "include/core/scanner/signature_scanner.h"
 
-int main(){
-    scanner::SignatureScanner scanner;
-    std::string filePath = "example.txt";
-    std::vector<unsigned char> hash = scanner.getFileHash(filePath, scanner::HashAlgorithm::SHA384);
-    if (!hash.empty()) {
-        std::cout << "SHA384 hash of the file: ";
-        for (unsigned char byte : hash) {
-            printf("%02x", byte);
-        }
-        std::cout << std::endl;
-    } else {
-        std::cerr << "Failed to compute SHA384 hash." << std::endl;
-    }
+int main()
+{
+    try
+    {
+        // Open a database file
+        SQLite::Database db("example.db3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
 
-    getchar();
+        // Create a table named 'users'
+        db.exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);");
+
+        // Insert random values into the 'users' table
+        db.exec("INSERT INTO users (name, age) VALUES ('Alice', 25);");
+        db.exec("INSERT INTO users (name, age) VALUES ('Bob', 30);");
+        db.exec("INSERT INTO users (name, age) VALUES ('Charlie', 35);");
+
+        // Query and display the inserted data
+        SQLite::Statement userQuery(db, "SELECT * FROM users;");
+        while (userQuery.executeStep())
+        {
+            int id = userQuery.getColumn(0);
+            const char *name = userQuery.getColumn(1);
+            int age = userQuery.getColumn(2);
+
+            std::cout << "User: " << id << ", " << name << ", " << age << std::endl;
+        }
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "exception: " << e.what() << std::endl;
+    }
     return 0;
 }

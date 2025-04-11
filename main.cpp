@@ -4,12 +4,17 @@
 #include "include/core/scanner/signature_scanner.h"
 #include "include/database/database.h"
 
+#include "scripts/dotenv_generate/dotenv_generate.cpp"
+
 int main(int argc, char *argv[])
 {
     if (argc != 3)
     {
         if (argc == 2 && std::string(argv[1]) == "-help")
         {
+            std::cout << "Scripts:" << std::endl;
+            std::cout << "  -dotenvGenerate\tGenerate .env file" << std::endl;
+            std::cout << std::endl;
             std::cout << "Database:" << std::endl;
             std::cout << " Raw:" << std::endl;
             std::cout << "  -dbVerifyRawConnection\t<file>\tVerify raw database connection" << std::endl;
@@ -33,7 +38,11 @@ int main(int argc, char *argv[])
 
     Scanner::SignatureScanner scanner;
 
-    if (std::string(argv[1]) == "-dbVerifyRawConnection")
+    if (std::string(argv[1]) == "-dotenvGenerate")
+    {
+        Scripts::generate_dot_env();
+    }
+    else if (std::string(argv[1]) == "-dbVerifyRawConnection")
     {
         Database::RawDatabase db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::Raw, argv[2]);
         db.verifyConnection();

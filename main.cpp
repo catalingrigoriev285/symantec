@@ -5,6 +5,7 @@ int main(int argc, char *argv[])
     if (argc == 2 && std::string(argv[1]) == "-help")
     {
         std::cout << "Scripts:" << std::endl;
+        std::cout << "  -clean\tClean configuration" << std::endl;
         std::cout << "  -dotenvVerify\t\tVerify if .env file exists" << std::endl;
         std::cout << "  -dotenvGenerate\tGenerate .env file" << std::endl;
         std::cout << std::endl;
@@ -37,15 +38,21 @@ int main(int argc, char *argv[])
 
     Scanner::SignatureScanner scanner;
 
-    if (command == "-dotenvVerify")
+    if(command == "-clean")
+    {
+        Scripts::cleanConfiguration();
+        return 0;
+    } else if (command == "-dotenvVerify")
     {
         if (Scripts::verify_env_file_exists())
         {
-            std::cout << "The .env file exists." << std::endl;
+            Models::Log log(Models::INFO, "dotenvVerify", "The .env file exists.");
+            std::cout << log << std::endl;
         }
         else
         {
-            std::cout << "The .env file does not exist." << std::endl;
+            Models::Exception exception("dotenvVerify", "The .env file does not exist.");
+            std::cout << exception << std::endl;
         }
     }
     else if (command == "-dotenvGenerate")
@@ -56,7 +63,8 @@ int main(int argc, char *argv[])
     {
         if (file.empty())
         {
-            std::cerr << "Error: <file> parameter is required for " << command << std::endl;
+            Models::Exception exception("dbVerifyRawConnection", "The <file> parameter is required.");
+            std::cout << exception << std::endl;
             return 1;
         }
         Database::RawDatabase db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::Raw, file);
@@ -73,7 +81,8 @@ int main(int argc, char *argv[])
     {
         if (file.empty())
         {
-            std::cerr << "Error: <file> parameter is required for " << command << std::endl;
+            Models::Exception exception("dbVerifySQLiteConnection", "The <file> parameter is required.");
+            std::cout << exception << std::endl;
             return 1;
         }
         Database::SQLiteDatabase db("localhost", "test.db", "user", "password", 0, Database::DatabaseType::SQLite, file);
@@ -92,9 +101,11 @@ int main(int argc, char *argv[])
     {
         if (file.empty())
         {
-            std::cerr << "Error: <file> parameter is required for " << command << std::endl;
+            Models::Exception exception(command, "The <file> parameter is required.");
+            std::cout << exception << std::endl;
             return 1;
         }
+
         Scanner::Signature signature;
         if (command == "-getFileSignature1")
         {
@@ -120,7 +131,8 @@ int main(int argc, char *argv[])
     }
     else
     {
-        std::cerr << "Unknown command: " << command << std::endl;
+        Models::Exception exception(command, "Unknown command.");
+        std::cout << exception << std::endl;
         return 1;
     }
 

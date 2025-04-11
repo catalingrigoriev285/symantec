@@ -30,12 +30,12 @@ namespace Scripts
         fprintf(env_file, "APP_VERSION=1.0\n");
         fprintf(env_file, "APP_AUTHOR=\"Catalin Grigoriev\"\n\n");
 
-        fprintf(env_file, "DB_CONNECTION=SQLite\n");
-        fprintf(env_file, "DB_HOST=127.0.0.1\n");
-        fprintf(env_file, "DB_PORT=3306\n");
-        fprintf(env_file, "DB_DATABASE=database.sqlite\n");
-        fprintf(env_file, "DB_USERNAME=root\n");
-        fprintf(env_file, "DB_PASSWORD=password\n");
+        // fprintf(env_file, "DB_CONNECTION=SQLite\n");
+        // fprintf(env_file, "DB_HOST=127.0.0.1\n");
+        // fprintf(env_file, "DB_PORT=3306\n");
+        // fprintf(env_file, "DB_DATABASE=database.sqlite\n");
+        // fprintf(env_file, "DB_USERNAME=root\n");
+        // fprintf(env_file, "DB_PASSWORD=password\n");
 
         fclose(env_file);
         printf(".env file created successfully.\n");

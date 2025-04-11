@@ -1,5 +1,15 @@
 #include "main.h"
 
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+#include <GLFW/glfw3.h> // Include glfw3.h after our OpenGL definitions
+
+static void glfw_error_callback(int error, const char *description)
+{
+    fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+
 int main(int argc, char *argv[])
 {
     if (argc == 2 && std::string(argv[1]) == "-help")
@@ -30,6 +40,82 @@ int main(int argc, char *argv[])
     if (argc < 2)
     {
         Scripts::initConfiguration();
+
+        // Setup window
+        glfwSetErrorCallback(glfw_error_callback);
+        if (!glfwInit())
+            return 1;
+
+        const char *glsl_version = "#version 130";
+        GLFWwindow *window = glfwCreateWindow(800, 600, "Dear ImGui Example", NULL, NULL);
+        if (window == NULL)
+            return 1;
+        glfwMakeContextCurrent(window);
+        glfwSwapInterval(1); // Enable vsync
+
+        // Setup Dear ImGui context
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO &io = ImGui::GetIO();
+        (void)io;
+
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
+
+        // Setup Platform/Renderer backends
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplOpenGL3_Init(glsl_version);
+
+        // Our state
+        bool show_window = true;
+        int counter = 0;
+
+        // Main loop
+        while (!glfwWindowShouldClose(window))
+        {
+            glfwPollEvents();
+
+            // Start the Dear ImGui frame
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            // Simple Window
+            if (show_window)
+            {
+                ImGui::Begin("Hello, world!", &show_window);
+
+                ImGui::Text("This is a simple counter:");
+                if (ImGui::Button("Increment"))
+                    counter++;
+
+                ImGui::SameLine();
+                ImGui::Text("Counter = %d", counter);
+
+                ImGui::End();
+            }
+
+            // Rendering
+            ImGui::Render();
+            int display_w, display_h;
+            glfwMakeContextCurrent(window);
+            glfwGetFramebufferSize(window, &display_w, &display_h);
+            glViewport(0, 0, display_w, display_h);
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+            glfwSwapBuffers(window);
+        }
+
+        // Cleanup
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+
+        glfwDestroyWindow(window);
+        glfwTerminate();
+
         return 0;
     }
 
@@ -38,11 +124,12 @@ int main(int argc, char *argv[])
 
     Scanner::SignatureScanner scanner;
 
-    if(command == "-clean")
+    if (command == "-clean")
     {
         Scripts::cleanConfiguration();
         return 0;
-    } else if (command == "-dotenvVerify")
+    }
+    else if (command == "-dotenvVerify")
     {
         if (Scripts::verify_env_file_exists())
         {

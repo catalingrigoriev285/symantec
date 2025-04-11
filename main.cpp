@@ -1,14 +1,8 @@
-#include <iostream>
-#include <string>
-
-#include "include/core/scanner/signature_scanner.h"
-#include "include/database/database.h"
-
-#include "scripts/dotenv_generate/dotenv_generate.h"
+#include "main.h"
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2 || (argc == 2 && std::string(argv[1]) == "-help"))
+    if (argc == 2 && std::string(argv[1]) == "-help")
     {
         std::cout << "Scripts:" << std::endl;
         std::cout << "  -dotenvVerify\t\tVerify if .env file exists" << std::endl;
@@ -29,6 +23,12 @@ int main(int argc, char *argv[])
         std::cout << "  -getFileSignature256\t<file>\tGet SHA256 signature of the file" << std::endl;
         std::cout << "  -getFileSignature384\t<file>\tGet SHA384 signature of the file" << std::endl;
         std::cout << "  -getFileSignature512\t<file>\tGet SHA512 signature of the file" << std::endl;
+        return 0;
+    }
+
+    if (argc < 2)
+    {
+        Scripts::initConfiguration();
         return 0;
     }
 

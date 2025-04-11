@@ -9,8 +9,12 @@ find_package(OpenSSL REQUIRED)
 
 add_executable(${PROJECT_NAME} 
     main.cpp 
+    
     src/core/scanner/signature_scanner.cpp
     src/database/database.cpp
+    src/models/log/log.cpp
+
+    scripts/configuration_init/configuration_init.cpp
     scripts/dotenv_generate/dotenv_generate.cpp
 )
 

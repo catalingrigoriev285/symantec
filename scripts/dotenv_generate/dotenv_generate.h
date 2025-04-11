@@ -6,6 +6,12 @@
 #include <cstdlib>
 #include <fstream>
 #include <io.h>
-#include <fcntl.h> 
+#include <fcntl.h>
+
+namespace Scripts
+{
+    bool verify_env_file_exists();
+    void generate_dot_env();
+}
 
 #endif

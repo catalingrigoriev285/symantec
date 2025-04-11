@@ -2,6 +2,15 @@
 
 namespace Scripts
 {
+    bool verify_env_file_exists()
+    {
+        if (_access("../../.env", 0) == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
     void generate_dot_env()
     {
         if (_access("../../.env", 0) == 0)
@@ -17,7 +26,7 @@ namespace Scripts
             return;
         }
 
-        fprintf(env_file, "APP_BAME=Symantec\n");
+        fprintf(env_file, "APP_NAME=Symantec\n");
         fprintf(env_file, "APP_VERSION=1.0\n");
         fprintf(env_file, "APP_AUTHOR=\"Catalin Grigoriev\"\n\n");
 
@@ -31,5 +40,4 @@ namespace Scripts
         fclose(env_file);
         printf(".env file created successfully.\n");
     }
-
 }

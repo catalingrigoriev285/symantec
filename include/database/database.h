@@ -4,8 +4,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstdlib>
 
 #include <SQLiteCpp/SQLiteCpp.h>
+
+#include "../../scripts/dotenv_generate/dotenv_generate.h"
 
 namespace Database {
     enum class DatabaseType {

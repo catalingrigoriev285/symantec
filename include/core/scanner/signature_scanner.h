@@ -32,6 +32,7 @@ namespace Scanner
         std::time_t updated_at;
 
     public:
+        Signature() = default;
         Signature(const std::string &name, const std::string &description, const std::vector<unsigned char> &hash, HashAlgorithm algorithm);
         virtual ~Signature();
     };

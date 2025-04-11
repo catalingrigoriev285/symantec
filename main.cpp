@@ -1,10 +1,5 @@
 #include "main.h"
 
-#include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
-#include <GLFW/glfw3.h> // Include glfw3.h after our OpenGL definitions
-
 static void glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -41,7 +36,6 @@ int main(int argc, char *argv[])
     {
         Scripts::initConfiguration();
 
-        // Setup window
         glfwSetErrorCallback(glfw_error_callback);
         if (!glfwInit())
             return 1;
@@ -51,36 +45,29 @@ int main(int argc, char *argv[])
         if (window == NULL)
             return 1;
         glfwMakeContextCurrent(window);
-        glfwSwapInterval(1); // Enable vsync
+        glfwSwapInterval(1);
 
-        // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO &io = ImGui::GetIO();
         (void)io;
 
-        // Setup Dear ImGui style
         ImGui::StyleColorsDark();
 
-        // Setup Platform/Renderer backends
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
 
-        // Our state
         bool show_window = true;
         int counter = 0;
 
-        // Main loop
         while (!glfwWindowShouldClose(window))
         {
             glfwPollEvents();
 
-            // Start the Dear ImGui frame
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            // Simple Window
             if (show_window)
             {
                 ImGui::Begin("Hello, world!", &show_window);
@@ -95,7 +82,6 @@ int main(int argc, char *argv[])
                 ImGui::End();
             }
 
-            // Rendering
             ImGui::Render();
             int display_w, display_h;
             glfwMakeContextCurrent(window);
@@ -108,7 +94,6 @@ int main(int argc, char *argv[])
             glfwSwapBuffers(window);
         }
 
-        // Cleanup
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();

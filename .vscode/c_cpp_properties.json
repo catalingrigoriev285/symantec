@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${vcpkgRoot}/x64-windows/include",
-                "${workspaceFolder}/libs/sqlite/include"
+                "${workspaceFolder}/libs/sqlite/include",
+                "${workspaceFolder}/libs/imgui"
             ],
             "defines": [
                 "_DEBUG",

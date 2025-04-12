@@ -1,32 +1,8 @@
 #include "main.h"
 
-#include "include/models/signature/signature_model.h"
-
 static void glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-}
-
-void setupSchema()
-{
-    try
-    {
-        SQLite::Database db("database.sqlite", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-        db.exec(
-            "CREATE TABLE IF NOT EXISTS signatures ("
-            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            "name TEXT NOT NULL, "
-            "description TEXT, "
-            "hash TEXT NOT NULL, "
-            "algorithm TEXT NOT NULL, "
-            "created_at TEXT NOT NULL, "
-            "updated_at TEXT NOT NULL"
-            ");");
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Schema creation failed: " << e.what() << std::endl;
-    }
 }
 
 int main(int argc, char *argv[])
@@ -59,20 +35,7 @@ int main(int argc, char *argv[])
     if (argc < 2)
     {
         Scripts::initConfiguration();
-
-        setupSchema();
-
-        Models::SignatureModel signatureModel;
-        signatureModel.setName("example");
-        signatureModel.setDescription("example description");
-        signatureModel.setHash("examplehash");
-        signatureModel.setAlgorithm("SHA256");
-        signatureModel.setCreatedAt("2023-10-01 12:00:00");
-        signatureModel.setUpdatedAt("2023-10-01 12:00:00");
-        signatureModel.save();
-
-        signatureModel.all();
-
+        Scripts::setupSchema();
 
         // glfwSetErrorCallback(glfw_error_callback);
         // if (!glfwInit())

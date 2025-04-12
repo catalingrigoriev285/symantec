@@ -36,6 +36,7 @@ add_executable(${PROJECT_NAME}
     src/models/exception/exception.cpp
 
     scripts/configuration_init/configuration_init.cpp
+    scripts/database_schema/database_schema.cpp
     scripts/dotenv_generate/dotenv_generate.cpp
 
     ${IMGUI_SOURCES}

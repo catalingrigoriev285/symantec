@@ -1,8 +1,32 @@
 #include "main.h"
 
+#include "include/models/signature/signature_model.h"
+
 static void glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+
+void setupSchema()
+{
+    try
+    {
+        SQLite::Database db("database.sqlite", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+        db.exec(
+            "CREATE TABLE IF NOT EXISTS signatures ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "name TEXT NOT NULL, "
+            "description TEXT, "
+            "hash TEXT NOT NULL, "
+            "algorithm TEXT NOT NULL, "
+            "created_at TEXT NOT NULL, "
+            "updated_at TEXT NOT NULL"
+            ");");
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Schema creation failed: " << e.what() << std::endl;
+    }
 }
 
 int main(int argc, char *argv[])
@@ -36,70 +60,84 @@ int main(int argc, char *argv[])
     {
         Scripts::initConfiguration();
 
-        glfwSetErrorCallback(glfw_error_callback);
-        if (!glfwInit())
-            return 1;
+        setupSchema();
 
-        const char *glsl_version = "#version 130";
-        GLFWwindow *window = glfwCreateWindow(800, 600, "Dear ImGui Example", NULL, NULL);
-        if (window == NULL)
-            return 1;
-        glfwMakeContextCurrent(window);
-        glfwSwapInterval(1);
+        Models::SignatureModel signatureModel;
+        signatureModel.setName("example");
+        signatureModel.setDescription("example description");
+        signatureModel.setHash("examplehash");
+        signatureModel.setAlgorithm("SHA256");
+        signatureModel.setCreatedAt("2023-10-01 12:00:00");
+        signatureModel.setUpdatedAt("2023-10-01 12:00:00");
+        signatureModel.save();
 
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO &io = ImGui::GetIO();
-        (void)io;
+        signatureModel.all();
 
-        ImGui::StyleColorsDark();
 
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init(glsl_version);
+        // glfwSetErrorCallback(glfw_error_callback);
+        // if (!glfwInit())
+        //     return 1;
 
-        bool show_window = true;
-        int counter = 0;
+        // const char *glsl_version = "#version 130";
+        // GLFWwindow *window = glfwCreateWindow(800, 600, "Dear ImGui Example", NULL, NULL);
+        // if (window == NULL)
+        //     return 1;
+        // glfwMakeContextCurrent(window);
+        // glfwSwapInterval(1);
 
-        while (!glfwWindowShouldClose(window))
-        {
-            glfwPollEvents();
+        // IMGUI_CHECKVERSION();
+        // ImGui::CreateContext();
+        // ImGuiIO &io = ImGui::GetIO();
+        // (void)io;
 
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
+        // ImGui::StyleColorsDark();
 
-            if (show_window)
-            {
-                ImGui::Begin("Hello, world!", &show_window);
+        // ImGui_ImplGlfw_InitForOpenGL(window, true);
+        // ImGui_ImplOpenGL3_Init(glsl_version);
 
-                ImGui::Text("This is a simple counter:");
-                if (ImGui::Button("Increment"))
-                    counter++;
+        // bool show_window = true;
+        // int counter = 0;
 
-                ImGui::SameLine();
-                ImGui::Text("Counter = %d", counter);
+        // while (!glfwWindowShouldClose(window))
+        // {
+        //     glfwPollEvents();
 
-                ImGui::End();
-            }
+        //     ImGui_ImplOpenGL3_NewFrame();
+        //     ImGui_ImplGlfw_NewFrame();
+        //     ImGui::NewFrame();
 
-            ImGui::Render();
-            int display_w, display_h;
-            glfwMakeContextCurrent(window);
-            glfwGetFramebufferSize(window, &display_w, &display_h);
-            glViewport(0, 0, display_w, display_h);
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        //     if (show_window)
+        //     {
+        //         ImGui::Begin("Hello, world!", &show_window);
 
-            glfwSwapBuffers(window);
-        }
+        //         ImGui::Text("This is a simple counter:");
+        //         if (ImGui::Button("Increment"))
+        //             counter++;
 
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
+        //         ImGui::SameLine();
+        //         ImGui::Text("Counter = %d", counter);
 
-        glfwDestroyWindow(window);
-        glfwTerminate();
+        //         ImGui::End();
+        //     }
+
+        //     ImGui::Render();
+        //     int display_w, display_h;
+        //     glfwMakeContextCurrent(window);
+        //     glfwGetFramebufferSize(window, &display_w, &display_h);
+        //     glViewport(0, 0, display_w, display_h);
+        //     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        //     glClear(GL_COLOR_BUFFER_BIT);
+        //     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        //     glfwSwapBuffers(window);
+        // }
+
+        // ImGui_ImplOpenGL3_Shutdown();
+        // ImGui_ImplGlfw_Shutdown();
+        // ImGui::DestroyContext();
+
+        // glfwDestroyWindow(window);
+        // glfwTerminate();
 
         return 0;
     }

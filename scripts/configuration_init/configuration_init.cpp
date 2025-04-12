@@ -7,7 +7,7 @@ namespace Scripts {
         return true;
     }
 
-    void initConfiguration(){
+    void initConfiguration(Database::Database &db){
         if (!std::ifstream("config.ini").good()) {
             Models::Log log(Models::LogType::INFO, "Configuration Init", "Configuration file not found. Generating...");
             std::cout << log << std::endl;
@@ -30,6 +30,26 @@ namespace Scripts {
             log.setParameters(Models::LogType::INFO, "Configuration Init", "Configuration file generated.");
             std::cout << log << std::endl;
         } else {
+            std::ifstream configFile("config.ini");
+            if (configFile.is_open()) {
+                std::string line;
+                while (std::getline(configFile, line)) {
+                    if (line.find("DB_CONNECTION=") == 0) {
+                        db.setConnectionType(line.substr(14));
+                    } else if (line.find("DB_HOST=") == 0) {
+                        db.setHost(line.substr(8));
+                    } else if (line.find("DB_PORT=") == 0) {
+                        db.setPort(std::stoi(line.substr(8)));
+                    } else if (line.find("DB_DATABASE=") == 0) {
+                        db.setDatabaseName(line.substr(12));
+                    } else if (line.find("DB_USERNAME=") == 0) {
+                        db.setUsername(line.substr(12));
+                    } else if (line.find("DB_PASSWORD=") == 0) {
+                        db.setPassword(line.substr(12));
+                    }
+                }
+                configFile.close();
+            }
             Models::Log log(Models::LogType::INFO, "Configuration Init", "Configuration file found.");
             std::cout << log << std::endl;
         }

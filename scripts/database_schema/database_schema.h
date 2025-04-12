@@ -7,11 +7,12 @@
 #include "../../include/models/log/log.h"
 #include "../../include/models/exception/exception.h"
 
+#include "../../include/database/database.h"
+
 namespace Scripts
 {
-    void setupSignaturesTable();
-
-    void setupSchema();
+    void setupSignaturesTable(Database::Database &global_db);
+    void setupSchema(Database::Database &global_db);
 }
 
 #endif

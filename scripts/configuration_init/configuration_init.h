@@ -9,9 +9,11 @@
 #include "../../include/models/log/log.h"
 #include "../dotenv_generate/dotenv_generate.h"
 
+#include "../../include/database/database.h"
+
 namespace Scripts {
     bool verifyConfiguration();
-    void initConfiguration();
+    void initConfiguration(Database::Database &db);
     void cleanConfiguration();
 }
 

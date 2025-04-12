@@ -2,11 +2,17 @@
 
 namespace Scripts
 {
-    void setupSignaturesTable()
+    void setupSignaturesTable(Database::Database &global_db)
     {
         try
         {
-            SQLite::Database db("database.sqlite", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+            SQLite::Database db(global_db.getPath().empty() ? "database.sqlite" : global_db.getPath(), SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+
+            if(global_db.getPath().empty())
+            {
+                Models::Exception exception("setupSignaturesTable", "Database path is empty.");
+                std::cout << exception << std::endl;
+            }
 
             SQLite::Statement query(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='signatures';");
             if (query.executeStep())
@@ -37,11 +43,11 @@ namespace Scripts
         }
     }
 
-    void setupSchema()
+    void setupSchema(Database::Database &global_db)
     {
         try
         {
-            setupSignaturesTable();
+            setupSignaturesTable(global_db);
             Models::Log log(Models::INFO, "setupSchema", "Database schema setup completed.");
             std::cout << log << std::endl;
         }

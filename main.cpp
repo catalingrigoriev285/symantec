@@ -34,8 +34,10 @@ int main(int argc, char *argv[])
 
     if (argc < 2)
     {
-        Scripts::initConfiguration();
-        Scripts::setupSchema();
+        Scripts::initConfiguration(global_database);
+        Scripts::setupSchema(global_database);
+
+        std::cout << global_database;
 
         // glfwSetErrorCallback(glfw_error_callback);
         // if (!glfwInit())

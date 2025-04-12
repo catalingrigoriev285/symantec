@@ -20,4 +20,6 @@
 #include "scripts/database_schema/database_schema.h"
 #include "scripts/dotenv_generate/dotenv_generate.h"
 
+Database::Database global_database;
+
 #endif

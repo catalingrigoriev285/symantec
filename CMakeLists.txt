@@ -28,6 +28,7 @@ include_directories(
 add_executable(${PROJECT_NAME} 
     main.cpp 
     
+    src/core/engine/engine_interface.cpp
     src/core/scanner/signature_scanner.cpp
     
     src/database/database.cpp
@@ -37,6 +38,7 @@ add_executable(${PROJECT_NAME}
 
     scripts/configuration_init/configuration_init.cpp
     scripts/database_schema/database_schema.cpp
+    scripts/dotenv_reader/dotenv_reader.cpp
     scripts/dotenv_generate/dotenv_generate.cpp
 
     ${IMGUI_SOURCES}

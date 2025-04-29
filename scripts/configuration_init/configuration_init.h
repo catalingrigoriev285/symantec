@@ -7,6 +7,7 @@
 #include <filesystem>
 
 #include "../../include/models/log/log.h"
+#include "../dotenv_reader/dotenv_reader.h"
 #include "../dotenv_generate/dotenv_generate.h"
 
 #include "../../include/database/database.h"

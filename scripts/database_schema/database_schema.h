@@ -7,6 +7,8 @@
 #include "../../include/models/log/log.h"
 #include "../../include/models/exception/exception.h"
 
+#include "../dotenv_reader/dotenv_reader.h"
+
 #include "../../include/database/database.h"
 
 namespace Scripts

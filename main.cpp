@@ -37,7 +37,14 @@ int main(int argc, char *argv[])
         Scripts::initConfiguration(global_database);
         Scripts::setupSchema(global_database);
 
-        std::cout << global_database;
+        // Debugging
+        for (const auto &entry : global_dotenv_entries)
+        {
+            if (entry.key == "LOG_ENABLE" && entry.value == "true")
+            {
+                std::cout << global_database;
+            }
+        }
 
         // glfwSetErrorCallback(glfw_error_callback);
         // if (!glfwInit())

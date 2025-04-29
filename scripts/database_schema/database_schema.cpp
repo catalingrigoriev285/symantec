@@ -8,17 +8,31 @@ namespace Scripts
         {
             SQLite::Database db(global_db.getPath().empty() ? "database.sqlite" : global_db.getPath(), SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
 
-            if(global_db.getPath().empty())
+            std::vector<Scripts::DotenvEntry> global_dotenv_entries = Scripts::read_dotenv_file("../../.env");
+
+            if (global_db.getPath().empty())
             {
-                Models::Exception exception("setupSignaturesTable", "Database path is empty.");
-                std::cout << exception << std::endl;
+                for (const auto &entry : global_dotenv_entries)
+                {
+                    if (entry.key == "LOG_ENABLE" && entry.value == "true")
+                    {
+                        Models::Exception exception("setupSignaturesTable", "Database path is empty.");
+                        std::cout << exception << std::endl;
+                    }
+                }
             }
 
             SQLite::Statement query(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='signatures';");
             if (query.executeStep())
             {
-                Models::Log log(Models::INFO, "setupSignaturesTable", "Signatures table already exists.");
-                std::cout << log << std::endl;
+                for (const auto &entry : global_dotenv_entries)
+                {
+                    if (entry.key == "LOG_ENABLE" && entry.value == "true")
+                    {
+                        Models::Log log(Models::INFO, "setupSignaturesTable", "Signatures table already exists.");
+                        std::cout << log << std::endl;
+                    }
+                }
                 return;
             }
 
@@ -48,8 +62,17 @@ namespace Scripts
         try
         {
             setupSignaturesTable(global_db);
-            Models::Log log(Models::INFO, "setupSchema", "Database schema setup completed.");
-            std::cout << log << std::endl;
+
+            std::vector<Scripts::DotenvEntry> global_dotenv_entries = Scripts::read_dotenv_file("../../.env");
+
+            for (const auto &entry : global_dotenv_entries)
+            {
+                if (entry.key == "LOG_ENABLE" && entry.value == "true")
+                {
+                    Models::Log log(Models::INFO, "setupSchema", "Database schema setup completed.");
+                    std::cout << log << std::endl;
+                }
+            }
         }
         catch (const std::exception &e)
         {

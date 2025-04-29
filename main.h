@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
@@ -18,8 +19,11 @@
 
 #include "scripts/configuration_init/configuration_init.h"
 #include "scripts/database_schema/database_schema.h"
+#include "scripts/dotenv_reader/dotenv_reader.h"
 #include "scripts/dotenv_generate/dotenv_generate.h"
 
 Database::Database global_database;
+
+std::vector<Scripts::DotenvEntry> global_dotenv_entries = Scripts::read_dotenv_file("../../.env");
 
 #endif

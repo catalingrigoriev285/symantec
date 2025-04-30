@@ -175,24 +175,35 @@ int main()
             if (ImGui::Button("Get file hash", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
                 std::string file_path = signature_hash;
-                app::models::signature::HashAlgorithm algorithm = static_cast<app::models::signature::HashAlgorithm>(selectedType);
 
-                app::core::scanner::signature_scanner::SignatureScanner scanner;
-                app::models::signature::Signature file_hashes = scanner.scanFile(file_path, algorithm);
-
-                file_hash_result = "File Hash: ";
-
-                std::ostringstream oss;
-                for (const auto &byte : file_hashes.getHash())
+                std::ifstream file(file_path);
+                if (!file.good())
                 {
-                    oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+                    ImGui::OpenPopup("Error");
+                    file_hash_result = "Error: File does not exist.";
                 }
-                file_hash_result += oss.str();
-                file_hash_only = oss.str();
+                else
+                {
+                    app::models::signature::HashAlgorithm algorithm = static_cast<app::models::signature::HashAlgorithm>(selectedType);
 
-                file_hash_result += "\nHash Algorithm: " + std::string(app::models::signature::HashAlgorithm_to_string(file_hashes.getAlgorithm()));
+                    app::core::scanner::signature_scanner::SignatureScanner scanner;
+                    app::models::signature::Signature file_hashes = scanner.scanFile(file_path, algorithm);
+
+                    file_hash_result = "File Hash: ";
+
+                    std::ostringstream oss;
+                    for (const auto &byte : file_hashes.getHash())
+                    {
+                        oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+                    }
+                    file_hash_result += oss.str();
+                    file_hash_only = oss.str();
+
+                    file_hash_result += "\nHash Algorithm: " + std::string(app::models::signature::HashAlgorithm_to_string(file_hashes.getAlgorithm()));
+                }
             }
-            if (!file_hash_result.empty())
+
+            if (!file_hash_only.empty())
             {
                 ImGui::BeginChild("file_hash_result", ImVec2(0, 0), false);
                 ImGui::TextWrapped(file_hash_result.c_str());
@@ -204,10 +215,36 @@ int main()
                 if (ImGui::Button("Copy to clipboard", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
                 {
                     ImGui::SetClipboardText(file_hash_only.c_str());
+                    ImGui::OpenPopup("clipboard_copy_alert");
                     app::models::logs::Logs log("Signature Scanner", "File hash copied to clipboard: " + file_hash_only, app::models::logs::INFO);
                 }
 
+                ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+                ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+                if (ImGui::BeginPopup("clipboard_copy_alert"))
+                {
+                    ImGui::Text("Hash hash copied to clipboard!");
+                    if (ImGui::Button("Close"))
+                    {
+                        ImGui::CloseCurrentPopup();
+                    }
+                    ImGui::EndPopup();
+                }
+
                 ImGui::EndChild();
+            }
+
+            ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+            if (ImGui::BeginPopup("Error"))
+            {
+                ImGui::Text("Error: File does not exist. Please check the file path.");
+                if (ImGui::Button("Close"))
+                {
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
             }
         }
         else if (active_frame == "settings")
@@ -304,7 +341,55 @@ int main()
 
             if (ImGui::Button("Save", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
-                // Handle Add Signature logic
+                std::vector<unsigned char> hash;
+                for (size_t i = 0; i < strlen(signature_hash); i += 2)
+                {
+                    unsigned int byte;
+                    std::stringstream ss;
+                    ss << std::hex << std::string(signature_hash + i, 2);
+                    ss >> byte;
+                    hash.push_back(static_cast<unsigned char>(byte));
+                }
+
+                if (hash.empty() || hash.size() % 2 != 0)
+                {
+                    app::models::logs::Logs log("Signature Scanner", "Invalid signature format: " + std::string(signature_hash), app::models::logs::ERROR);
+                    ImGui::OpenPopup("Error");
+                }
+                else
+                {
+                    app::models::signature::HashAlgorithm algorithm = static_cast<app::models::signature::HashAlgorithm>(selectedType);
+
+                    app::models::signature::Signature signature = app::models::signature::Signature("SHA1", "SHA1 file signature", hash, algorithm);
+
+                    app::models::logs::Logs log("Signature Scanner", std::string(signature_hash) + " successfully added to database!", app::models::logs::INFO);
+                    ImGui::OpenPopup("Success");
+                }
+            }
+
+            ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+            if (ImGui::BeginPopup("Error"))
+            {
+                ImGui::Text("Invalid signature format. Please check the input.");
+                if (ImGui::Button("Close"))
+                {
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+
+            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+            if (ImGui::BeginPopup("Success"))
+            {
+                ImGui::Text("Signature successfully added to the database!");
+                if (ImGui::Button("Close"))
+                {
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
             }
         }
         else if (active_frame == "about")

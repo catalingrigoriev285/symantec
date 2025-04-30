@@ -43,6 +43,9 @@ namespace app::models::signature
     class Signature : public app::models::Model
     {
     private:
+        int id;
+        std::string name;
+        std::string description;
         std::string value;
         HashAlgorithm algorithm;
         std::vector<unsigned char> hash;

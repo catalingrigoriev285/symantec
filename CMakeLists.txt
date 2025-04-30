@@ -34,6 +34,10 @@ add_executable(${PROJECT_NAME}
     # models
     app/models/model.cpp
     app/models/logs/logs.cpp
+    app/models/signature/signature.cpp
+
+    # core
+    app/core/scanner/signature_scanner/signature_scanner.cpp
 
     ${IMGUI_SOURCES}
 )

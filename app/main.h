@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-// Models
-#include "models/logs/logs.h"
+#include "core/scanner/signature_scanner/signature_scanner.h"
 
 #endif

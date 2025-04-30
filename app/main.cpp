@@ -1,5 +1,7 @@
 #include "main.h"
 
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+
 int main()
 {
     glfwSetErrorCallback(glfw_error_callback);
@@ -138,7 +140,39 @@ int main()
         }
         else if (active_frame == "services")
         {
-            ImGui::Text("This is Frame 4.");
+            if (ImGui::Button("Get file signature", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
+            {
+                active_frame = "services_get_file_signature";
+            }
+        }
+        else if (active_frame == "services_get_file_signature")
+        {
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Text("Get file signature");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Separator();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+            static char signature_hash[128] = "";
+            ImGui::InputTextWithHint("##signature_hash", "Enter hash here", signature_hash, ImGui::GetContentRegionAvail().x);
+            ImGui::SameLine();
+
+            static const char* signature_algorithm[] = {
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA1),
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA224),
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA256),
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA384),
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA512)
+            };
+
+            static int selectedType = 0;
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+            ImGui::Combo("##signature_algorithm", &selectedType, signature_algorithm, IM_ARRAYSIZE(signature_algorithm));
+
+            if (ImGui::Button("Save", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
+            {
+                // Handle Add Signature logic
+            }
         }
         else if (active_frame == "settings")
         {
@@ -185,7 +219,14 @@ int main()
             ImGui::InputTextWithHint("##signature_hash", "Enter hash here", signature_hash, ImGui::GetContentRegionAvail().x);
             ImGui::SameLine();
 
-            static const char* signature_algorithm[] = { "Malware", "Adware", "Spyware", "Ransomware", "Trojan" };
+            static const char* signature_algorithm[] = {
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA1),
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA224),
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA256),
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA384),
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA512)
+            };
+            
             static int selectedType = 0;
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
             ImGui::Combo("##signature_algorithm", &selectedType, signature_algorithm, IM_ARRAYSIZE(signature_algorithm));

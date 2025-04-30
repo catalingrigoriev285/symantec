@@ -11,6 +11,7 @@
 #include "modules/configuration/configuration.h"
 
 #include "models/logs/logs.h"
+#include "models/signature/signature.h"
 
 static void glfw_error_callback(int error, const char *description)
 {

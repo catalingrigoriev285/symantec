@@ -21,6 +21,25 @@ namespace app::models::signature
         SHA512 = 4, // Very strong, but uses more resources.
     };
 
+    inline const char* HashAlgorithm_to_string(HashAlgorithm algorithm)
+    {
+        switch (algorithm)
+        {
+        case HashAlgorithm::SHA1:
+            return "SHA1";
+        case HashAlgorithm::SHA224:
+            return "SHA224";
+        case HashAlgorithm::SHA256:
+            return "SHA256";
+        case HashAlgorithm::SHA384:
+            return "SHA384";
+        case HashAlgorithm::SHA512:
+            return "SHA512";
+        default:
+            return "Unknown";
+        }
+    }
+
     class Signature : public app::models::Model
     {
     private:

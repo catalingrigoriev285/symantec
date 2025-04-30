@@ -13,6 +13,11 @@ int main()
 {
     app::modules::configuration::Configuration config("symantec.ini");
 
+    ImGuiConsoleBuffer consoleBuffer;
+    std::ostream consoleStream(&consoleBuffer);
+
+    std::streambuf *oldCoutBuffer = std::cout.rdbuf(consoleStream.rdbuf());
+
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -78,6 +83,10 @@ int main()
         if (ImGui::Button("Administration", ImVec2(buttonWidth, buttonHeight)))
         {
             active_frame = "administration";
+        }
+        if (ImGui::Button("Console", ImVec2(buttonWidth, buttonHeight)))
+        {
+            active_frame = "console";
         }
         if (ImGui::Button("About", ImVec2(buttonWidth, buttonHeight)))
         {
@@ -425,6 +434,12 @@ int main()
                 ImGui::EndPopup();
             }
         }
+        else if (active_frame == "console")
+        {
+            ImGui::BeginChild("ConsoleOutput", ImVec2(0, 0), true);
+            ImGui::TextWrapped(consoleBuffer.buffer.str().c_str());
+            ImGui::EndChild();
+        }
         else if (active_frame == "about")
         {
             ImGui::BeginChild("AboutText", ImVec2(0, 0), false);
@@ -452,6 +467,8 @@ int main()
 
     glfwDestroyWindow(window);
     glfwTerminate();
+
+    std::cout.rdbuf(oldCoutBuffer);
 
     return 0;
 }

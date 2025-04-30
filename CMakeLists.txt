@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.31.3)
 
 project(symantec)
 
-# Set C++ standard to C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -26,20 +25,7 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME} 
-    main.cpp 
-    
-    src/core/engine/engine_interface.cpp
-    src/core/scanner/signature_scanner.cpp
-    
-    src/database/database.cpp
-
-    src/models/log/log.cpp
-    src/models/exception/exception.cpp
-
-    scripts/configuration_init/configuration_init.cpp
-    scripts/database_schema/database_schema.cpp
-    scripts/dotenv_reader/dotenv_reader.cpp
-    scripts/dotenv_generate/dotenv_generate.cpp
+    app/main.cpp
 
     ${IMGUI_SOURCES}
 )

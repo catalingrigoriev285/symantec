@@ -27,6 +27,14 @@ include_directories(
 add_executable(${PROJECT_NAME} 
     app/main.cpp
 
+    # modules
+    app/modules/configuration/configuration.cpp
+    app/modules/database/database.cpp
+
+    # models
+    app/models/model.cpp
+    app/models/logs/logs.cpp
+
     ${IMGUI_SOURCES}
 )
 

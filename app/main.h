@@ -3,4 +3,7 @@
 
 #include <iostream>
 
+// Models
+#include "models/logs/logs.h"
+
 #endif

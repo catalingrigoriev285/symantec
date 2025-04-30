@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <ctime>
 
+#include "../model.h"
+
 namespace app::models::signature
 {
     enum class HashAlgorithm
@@ -19,7 +21,7 @@ namespace app::models::signature
         SHA512 = 4, // Very strong, but uses more resources.
     };
 
-    class Signature
+    class Signature : public app::models::Model
     {
     private:
         std::string value;
@@ -30,7 +32,7 @@ namespace app::models::signature
         std::time_t updated_at;
 
     public:
-        Signature() = default;
+        Signature() : Model("signatures"), value(""), algorithm(HashAlgorithm::SHA256), hash({}), created_at(std::time(nullptr)), updated_at(std::time(nullptr)) {}
 
         Signature(const std::string &name, const std::string &description, const std::vector<unsigned char> &hash, HashAlgorithm algorithm);
 

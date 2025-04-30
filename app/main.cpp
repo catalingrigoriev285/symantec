@@ -170,7 +170,29 @@ int main()
 
             if (ImGui::Button("Add a new signature to database", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
-                // Handle Full Scan logic
+                active_frame = "administration_database_add";
+            }
+        }
+        else if(active_frame == "administration_database_add")
+        {
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Text("Add a new signature to database");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Separator();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+            static char signature_hash[128] = "";
+            ImGui::InputTextWithHint("##signature_hash", "Enter hash here", signature_hash, ImGui::GetContentRegionAvail().x);
+            ImGui::SameLine();
+
+            static const char* signature_algorithm[] = { "Malware", "Adware", "Spyware", "Ransomware", "Trojan" };
+            static int selectedType = 0;
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+            ImGui::Combo("##signature_algorithm", &selectedType, signature_algorithm, IM_ARRAYSIZE(signature_algorithm));
+
+            if (ImGui::Button("Save", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
+            {
+                // Handle Add Signature logic
             }
         }
         else if (active_frame == "about")

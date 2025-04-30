@@ -87,15 +87,18 @@ int main()
 
         if (active_frame == "home")
         {
-            ImGui::Text("Protected");
+            ImGui::Text("home");
         }
         else if (active_frame == "scanning")
         {
-            ImGui::Text("Scanning Options:");
-            ImGui::Dummy(ImVec2(0.0f, 10.0f)); // Add vertical spacing
-
-            float buttonWidth = ImGui::GetContentRegionAvail().x / 2.0f - 5.0f; // Half width with spacing
+            float buttonWidth = ImGui::GetContentRegionAvail().x / 2.0f - 5.0f;
             float buttonHeight = 50.0f;
+
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Text("Scanning:");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Separator();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 10));
 
@@ -139,16 +142,35 @@ int main()
         }
         else if (active_frame == "settings")
         {
-            ImGui::Text("This is Frame 5.");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Text("Logging System:");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Separator();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+            static bool enableFeature = false;
+            ImGui::Checkbox("##EnableFeature", &enableFeature);
+            ImGui::SameLine();
+            ImGui::Text("Display logs in console");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+            static bool enableFeature2 = false;
+            ImGui::Checkbox("##EnableFeature2", &enableFeature2);
+            ImGui::SameLine();
+            ImGui::Text("Write logs in file");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
         }
         else if (active_frame == "administration")
         {
-            ImGui::Text("Administration Panel:");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Text("Database:");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Separator();
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-            if (ImGui::Selectable("Add a new signature to database"))
+            if (ImGui::Button("Add a new signature to database", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
-                // Handle Scanning History logic
+                // Handle Full Scan logic
             }
         }
         else if (active_frame == "about")

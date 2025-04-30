@@ -37,7 +37,7 @@ namespace app::core::scanner::signature_scanner
                 }
                 catch (const std::exception &e)
                 {
-                    std::cerr << "Error scanning file " << entry.path() << ": " << e.what() << "\n";
+                    app::models::logs::Logs log("Signature Scanner", "Error scanning file: " + std::string(e.what()), app::models::logs::ERROR);
                 }
             }
         }
@@ -49,7 +49,8 @@ namespace app::core::scanner::signature_scanner
         std::ifstream file(filePath, std::ios::binary);
         if (!file)
         {
-            std::cerr << "Failed to open file: " << filePath << "\n";
+            app::models::logs::Logs log("Signature Scanner", "Failed to open file: " + filePath, app::models::logs::ERROR);
+            std::cout << log << std::endl;
             return app::models::signature::Signature("SHA1", "Failed to compute SHA1", {}, app::models::signature::HashAlgorithm::SHA1);
         }
 
@@ -77,6 +78,23 @@ namespace app::core::scanner::signature_scanner
             throw std::runtime_error("SHA1_Final failed");
         }
 
+        app::modules::configuration::Configuration config("symantec.ini");
+        if (config.exists() && config.get("log_enabled").second == "true")
+        {
+            app::models::logs::Logs log("Signature Scanner", "Scanning file: " + filePath, app::models::logs::INFO);
+            std::cout << log << std::endl;
+
+            std::ostringstream oss;
+            for (unsigned char byte : hash)
+            {
+                oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+            }
+            std::string hashString = oss.str();
+
+            app::models::logs::Logs log_result("Signature Scanner", "File Hash: " + hashString, app::models::logs::INFO);
+            std::cout << log_result << std::endl;
+        }
+
         return app::models::signature::Signature("SHA1", "SHA1 file signature", hash, app::models::signature::HashAlgorithm::SHA1);
     }
 
@@ -85,7 +103,8 @@ namespace app::core::scanner::signature_scanner
         std::ifstream file(filePath, std::ios::binary);
         if (!file)
         {
-            std::cerr << "Failed to open file: " << filePath << "\n";
+            app::models::logs::Logs log("Signature Scanner", "Failed to open file: " + filePath, app::models::logs::ERROR);
+            std::cout << log << std::endl;
             return app::models::signature::Signature("SHA224", "Failed to compute SHA224", {}, app::models::signature::HashAlgorithm::SHA224);
         }
 
@@ -113,6 +132,23 @@ namespace app::core::scanner::signature_scanner
             throw std::runtime_error("SHA224_Final failed");
         }
 
+        app::modules::configuration::Configuration config("symantec.ini");
+        if (config.exists() && config.get("log_enabled").second == "true")
+        {
+            app::models::logs::Logs log("Signature Scanner", "Scanning file: " + filePath, app::models::logs::INFO);
+            std::cout << log << std::endl;
+
+            std::ostringstream oss;
+            for (unsigned char byte : hash)
+            {
+                oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+            }
+            std::string hashString = oss.str();
+
+            app::models::logs::Logs log_result("Signature Scanner", "File Hash: " + hashString, app::models::logs::INFO);
+            std::cout << log_result << std::endl;
+        }
+
         return app::models::signature::Signature("SHA224", "SHA224 file signature", hash, app::models::signature::HashAlgorithm::SHA224);
     }
 
@@ -121,7 +157,8 @@ namespace app::core::scanner::signature_scanner
         std::ifstream file(filePath, std::ios::binary);
         if (!file)
         {
-            std::cerr << "Failed to open file: " << filePath << "\n";
+            app::models::logs::Logs log("Signature Scanner", "Failed to open file: " + filePath, app::models::logs::ERROR);
+            std::cout << log << std::endl;
             return app::models::signature::Signature("SHA256", "Failed to compute SHA256", {}, app::models::signature::HashAlgorithm::SHA256);
         }
 
@@ -149,6 +186,23 @@ namespace app::core::scanner::signature_scanner
             throw std::runtime_error("SHA256_Final failed");
         }
 
+        app::modules::configuration::Configuration config("symantec.ini");
+        if (config.exists() && config.get("log_enabled").second == "true")
+        {
+            app::models::logs::Logs log("Signature Scanner", "Scanning file: " + filePath, app::models::logs::INFO);
+            std::cout << log << std::endl;
+
+            std::ostringstream oss;
+            for (unsigned char byte : hash)
+            {
+                oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+            }
+            std::string hashString = oss.str();
+
+            app::models::logs::Logs log_result("Signature Scanner", "File Hash: " + hashString, app::models::logs::INFO);
+            std::cout << log_result << std::endl;
+        }
+
         return app::models::signature::Signature("SHA256", "SHA256 file signature", hash, app::models::signature::HashAlgorithm::SHA256);
     }
 
@@ -157,7 +211,8 @@ namespace app::core::scanner::signature_scanner
         std::ifstream file(filePath, std::ios::binary);
         if (!file)
         {
-            std::cerr << "Failed to open file: " << filePath << "\n";
+            app::models::logs::Logs log("Signature Scanner", "Failed to open file: " + filePath, app::models::logs::ERROR);
+            std::cout << log << std::endl;
             return app::models::signature::Signature("SHA384", "Failed to compute SHA384", {}, app::models::signature::HashAlgorithm::SHA384);
         }
 
@@ -185,6 +240,23 @@ namespace app::core::scanner::signature_scanner
             throw std::runtime_error("SHA384_Final failed");
         }
 
+        app::modules::configuration::Configuration config("symantec.ini");
+        if (config.exists() && config.get("log_enabled").second == "true")
+        {
+            app::models::logs::Logs log("Signature Scanner", "Scanning file: " + filePath, app::models::logs::INFO);
+            std::cout << log << std::endl;
+
+            std::ostringstream oss;
+            for (unsigned char byte : hash)
+            {
+                oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+            }
+            std::string hashString = oss.str();
+
+            app::models::logs::Logs log_result("Signature Scanner", "File Hash: " + hashString, app::models::logs::INFO);
+            std::cout << log_result << std::endl;
+        }
+
         return app::models::signature::Signature("SHA384", "SHA384 file signature", hash, app::models::signature::HashAlgorithm::SHA384);
     }
 
@@ -193,7 +265,8 @@ namespace app::core::scanner::signature_scanner
         std::ifstream file(filePath, std::ios::binary);
         if (!file)
         {
-            std::cerr << "Failed to open file: " << filePath << "\n";
+            app::models::logs::Logs log("Signature Scanner", "Failed to open file: " + filePath, app::models::logs::ERROR);
+            std::cout << log << std::endl;
             return app::models::signature::Signature("SHA512", "Failed to compute SHA512", {}, app::models::signature::HashAlgorithm::SHA512);
         }
 
@@ -219,6 +292,23 @@ namespace app::core::scanner::signature_scanner
         if (!SHA512_Final(hashData, &sha512))
         {
             throw std::runtime_error("SHA512_Final failed");
+        }
+
+        app::modules::configuration::Configuration config("symantec.ini");
+        if (config.exists() && config.get("log_enabled").second == "true")
+        {
+            app::models::logs::Logs log("Signature Scanner", "Scanning file: " + filePath, app::models::logs::INFO);
+            std::cout << log << std::endl;
+
+            std::ostringstream oss;
+            for (unsigned char byte : hash)
+            {
+                oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+            }
+            std::string hashString = oss.str();
+
+            app::models::logs::Logs log_result("Signature Scanner", "File Hash: " + hashString, app::models::logs::INFO);
+            std::cout << log_result << std::endl;
         }
 
         return app::models::signature::Signature("SHA512", "SHA512 file signature", hash, app::models::signature::HashAlgorithm::SHA512);

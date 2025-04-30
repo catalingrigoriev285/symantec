@@ -11,6 +11,8 @@
 
 #include <openssl/sha.h>
 
+#include "../../../modules/configuration/configuration.h"
+#include "../../../models/logs/logs.h"
 #include "../../../models/signature/signature.h"
 
 namespace app::core::scanner::signature_scanner {

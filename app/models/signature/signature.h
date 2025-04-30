@@ -34,6 +34,12 @@ namespace app::models::signature
 
         Signature(const std::string &name, const std::string &description, const std::vector<unsigned char> &hash, HashAlgorithm algorithm);
 
+        std::string getValue() const { return value; }
+        HashAlgorithm getAlgorithm() const { return algorithm; }
+        std::vector<unsigned char> getHash() const { return hash; }
+        std::time_t getCreatedAt() const { return created_at; }
+        std::time_t getUpdatedAt() const { return updated_at; }
+
         friend std::ostream &operator<<(std::ostream &os, const Signature &signature)
         {
             os << "Hash: ";

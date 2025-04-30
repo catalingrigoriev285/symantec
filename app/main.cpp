@@ -1,5 +1,12 @@
 #include "main.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <commdlg.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+#undef ERROR
+
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 
 int main()
@@ -156,6 +163,7 @@ int main()
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
             static char signature_hash[128] = "";
+
             ImGui::InputTextWithHint("##signature_hash", "Enter file path there", signature_hash, ImGui::GetContentRegionAvail().x);
             ImGui::SameLine();
 
@@ -172,6 +180,31 @@ int main()
 
             static std::string file_hash_result = "";
             static std::string file_hash_only = "";
+
+            if (ImGui::Button("Browse", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
+            {
+                OPENFILENAMEW ofn;
+                wchar_t szFile[260];
+
+                ZeroMemory(&ofn, sizeof(ofn));
+                ofn.lStructSize = sizeof(ofn);
+                ofn.hwndOwner = glfwGetWin32Window(window);
+                ofn.lpstrFile = szFile;
+                ofn.lpstrFile[0] = L'\0';
+                ofn.nMaxFile = sizeof(szFile) / sizeof(wchar_t);
+                ofn.lpstrFilter = L"All Files\0*.*\0";
+                ofn.nFilterIndex = 1;
+                ofn.lpstrFileTitle = NULL;
+                ofn.nMaxFileTitle = 0;
+                ofn.lpstrInitialDir = NULL;
+                ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+                if (GetOpenFileNameW(&ofn) == TRUE)
+                {
+                    wcstombs(signature_hash, szFile, sizeof(signature_hash)); // Convert wide-char to narrow-char
+                }
+            }
+
             if (ImGui::Button("Get file hash", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
                 std::string file_path = signature_hash;

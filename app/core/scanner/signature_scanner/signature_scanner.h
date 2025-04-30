@@ -7,6 +7,7 @@
 #include <vector>
 #include <stdexcept>
 #include <ctime>
+#include <filesystem>
 
 #include <openssl/sha.h>
 
@@ -23,6 +24,7 @@ namespace app::core::scanner::signature_scanner {
         SignatureScanner(std::string path, app::models::signature::HashAlgorithm algorithm);
 
         Signature scanFile(const std::string& filePath, const app::models::signature::HashAlgorithm& algorithm);
+        std::vector<Signature> scanDirectory(const std::string& directoryPath, const app::models::signature::HashAlgorithm& algorithm);
 
         Signature getFileSignatureSHA1(const std::string &filePath);
         Signature getFileSignatureSHA224(const std::string &filePath);

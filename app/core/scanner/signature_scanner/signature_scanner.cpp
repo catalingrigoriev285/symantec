@@ -24,6 +24,26 @@ namespace app::core::scanner::signature_scanner
         }
     }
 
+    std::vector<app::models::signature::Signature> SignatureScanner::scanDirectory(const std::string &directoryPath, const app::models::signature::HashAlgorithm &algorithm)
+    {
+        std::vector<app::models::signature::Signature> signatures;
+        for (const auto &entry : std::filesystem::recursive_directory_iterator(directoryPath))
+        {
+            if (entry.is_regular_file())
+            {
+                try
+                {
+                    signatures.push_back(scanFile(entry.path().string(), algorithm));
+                }
+                catch (const std::exception &e)
+                {
+                    std::cerr << "Error scanning file " << entry.path() << ": " << e.what() << "\n";
+                }
+            }
+        }
+        return signatures;
+    }
+
     app::models::signature::Signature SignatureScanner::getFileSignatureSHA1(const std::string &filePath)
     {
         std::ifstream file(filePath, std::ios::binary);

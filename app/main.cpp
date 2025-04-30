@@ -4,6 +4,8 @@
 
 int main()
 {
+    app::modules::configuration::Configuration config("symantec.ini");
+
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -154,24 +156,58 @@ int main()
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
             static char signature_hash[128] = "";
-            ImGui::InputTextWithHint("##signature_hash", "Enter hash here", signature_hash, ImGui::GetContentRegionAvail().x);
+            ImGui::InputTextWithHint("##signature_hash", "Enter file path there", signature_hash, ImGui::GetContentRegionAvail().x);
             ImGui::SameLine();
 
-            static const char* signature_algorithm[] = {
+            static const char *signature_algorithm[] = {
                 app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA1),
                 app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA224),
                 app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA256),
                 app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA384),
-                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA512)
-            };
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA512)};
 
             static int selectedType = 0;
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
             ImGui::Combo("##signature_algorithm", &selectedType, signature_algorithm, IM_ARRAYSIZE(signature_algorithm));
 
-            if (ImGui::Button("Save", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
+            static std::string file_hash_result = "";
+            static std::string file_hash_only = "";
+            if (ImGui::Button("Get file hash", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
-                // Handle Add Signature logic
+                std::string file_path = signature_hash;
+                app::models::signature::HashAlgorithm algorithm = static_cast<app::models::signature::HashAlgorithm>(selectedType);
+
+                app::core::scanner::signature_scanner::SignatureScanner scanner;
+                app::models::signature::Signature file_hashes = scanner.scanFile(file_path, algorithm);
+
+                file_hash_result = "File Hash: ";
+
+                std::ostringstream oss;
+                for (const auto &byte : file_hashes.getHash())
+                {
+                    oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+                }
+                file_hash_result += oss.str();
+                file_hash_only = oss.str();
+
+                file_hash_result += "\nHash Algorithm: " + std::string(app::models::signature::HashAlgorithm_to_string(file_hashes.getAlgorithm()));
+            }
+            if (!file_hash_result.empty())
+            {
+                ImGui::BeginChild("file_hash_result", ImVec2(0, 0), false);
+                ImGui::TextWrapped(file_hash_result.c_str());
+
+                ImGui::Dummy(ImVec2(0.0f, 10.0f));
+                ImGui::Separator();
+                ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+                if (ImGui::Button("Copy to clipboard", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
+                {
+                    ImGui::SetClipboardText(file_hash_only.c_str());
+                    app::models::logs::Logs log("Signature Scanner", "File hash copied to clipboard: " + file_hash_only, app::models::logs::INFO);
+                }
+
+                ImGui::EndChild();
             }
         }
         else if (active_frame == "settings")
@@ -182,16 +218,52 @@ int main()
             ImGui::Separator();
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-            static bool enableFeature = false;
-            ImGui::Checkbox("##EnableFeature", &enableFeature);
+            // LOG_ENABLED
+            static bool log_enabled = false;
+
+            if (config.exists() && config.get("log_enabled").second == "true")
+            {
+                log_enabled = true;
+            }
+
+            if (ImGui::Checkbox("##log_enabled", &log_enabled))
+            {
+                if (log_enabled)
+                {
+                    config.set("log_enabled", "true");
+                }
+                else
+                {
+                    config.set("log_enabled", "false");
+                }
+                config.save();
+            }
             ImGui::SameLine();
             ImGui::Text("Display logs in console");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-            static bool enableFeature2 = false;
-            ImGui::Checkbox("##EnableFeature2", &enableFeature2);
+            // LOG_WRITE_TO_FILE
+            static bool log_write_to_file = false;
+            if (config.exists() && config.get("log_write_to_file").second == "true")
+            {
+                log_write_to_file = true;
+            }
+
+            if (ImGui::Checkbox("##log_write_to_file", &log_write_to_file))
+            {
+                if (log_write_to_file)
+                {
+                    config.set("log_write_to_file", "true");
+                }
+                else
+                {
+                    config.set("log_write_to_file", "false");
+                }
+                config.save();
+            }
+
             ImGui::SameLine();
-            ImGui::Text("Write logs in file");
+            ImGui::Text("Write logs to file");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
         }
         else if (active_frame == "administration")
@@ -207,7 +279,7 @@ int main()
                 active_frame = "administration_database_add";
             }
         }
-        else if(active_frame == "administration_database_add")
+        else if (active_frame == "administration_database_add")
         {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Add a new signature to database");
@@ -219,14 +291,13 @@ int main()
             ImGui::InputTextWithHint("##signature_hash", "Enter hash here", signature_hash, ImGui::GetContentRegionAvail().x);
             ImGui::SameLine();
 
-            static const char* signature_algorithm[] = {
+            static const char *signature_algorithm[] = {
                 app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA1),
                 app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA224),
                 app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA256),
                 app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA384),
-                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA512)
-            };
-            
+                app::models::signature::HashAlgorithm_to_string(app::models::signature::HashAlgorithm::SHA512)};
+
             static int selectedType = 0;
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
             ImGui::Combo("##signature_algorithm", &selectedType, signature_algorithm, IM_ARRAYSIZE(signature_algorithm));

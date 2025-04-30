@@ -44,6 +44,8 @@ namespace app::modules::configuration
         
         std::vector<std::pair<std::string, std::string>> read();
         std::pair<std::string, std::string> get(std::string key);
+        void set(std::string key, std::string value);
+        void save();
     };
 }
 

@@ -108,5 +108,70 @@ namespace app::modules::configuration
         return {"", ""};
     }
 
+    void Configuration::set(std::string key, std::string value)
+    {
+        if (key == "app_name")
+            app_name = value;
+        else if (key == "app_author")
+            app_author = value;
+        else if (key == "app_version")
+            app_version = std::stod(value);
+        else if (key == "log_level")
+            log_level = value;
+        else if (key == "log_enabled")
+            log_enabled = (value == "true");
+        else if (key == "log_write_to_file")
+            log_write_to_file = (value == "true");
+        else if (key == "log_file_path")
+            log_file_path = value;
+        else if (key == "log_file_max_size")
+            log_file_max_size = std::stoul(value);
+        else if (key == "log_file_max_backups")
+            log_file_max_backups = std::stoi(value);
+        else if (key == "log_file_compress")
+            log_file_compress = (value == "true");
+        else if (key == "db_connection")
+            db_connection = value;
+        else if (key == "db_host")
+            db_host = value;
+        else if (key == "db_port")
+            db_port = std::stoi(value);
+        else if (key == "db_database")
+            db_database = value;
+        else if (key == "db_user")
+            db_user = value;
+        else if (key == "db_password")
+            db_password = value;
+
+        save();
+    }
+
+    void Configuration::save()
+    {
+        std::ofstream file(file_path, std::ios::trunc);
+        if (file)
+        {
+            file << "[Application]\n"
+                 << "app_name=" << app_name << "\n"
+                 << "app_author=" << app_author << "\n"
+                 << "app_version=" << app_version << "\n\n"
+                 << "[Logging]\n"
+                 << "log_level=" << log_level << "\n"
+                 << "log_enabled=" << (log_enabled ? "true" : "false") << "\n"
+                 << "log_write_to_file=" << (log_write_to_file ? "true" : "false") << "\n"
+                 << "log_file_path=" << log_file_path << "\n"
+                 << "log_file_max_size=" << log_file_max_size << "\n"
+                 << "log_file_max_backups=" << log_file_max_backups << "\n"
+                 << "log_file_compress=" << (log_file_compress ? "true" : "false") << "\n\n"
+                 << "[Database]\n"
+                 << "db_connection=" << db_connection << "\n"
+                 << "db_host=" << db_host << "\n"
+                 << "db_port=" << db_port << "\n"
+                 << "db_database=" << db_database << "\n"
+                 << "db_user=" << db_user << "\n"
+                 << "db_password=" << db_password << "\n";
+        }
+    }
+
     Configuration::~Configuration() {}
 }

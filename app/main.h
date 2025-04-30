@@ -13,6 +13,8 @@
 #include "models/logs/logs.h"
 #include "models/signature/signature.h"
 
+#include "core/scanner/signature_scanner/signature_scanner.h"
+
 static void glfw_error_callback(int error, const char *description)
 {
     // fprintf(stderr, "Glfw Error %d: %s\n", error, description);

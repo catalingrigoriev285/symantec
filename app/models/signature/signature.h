@@ -79,6 +79,35 @@ namespace app::models::signature
         };
 
         ~Signature() = default;
+        
+        std::vector<std::pair<std::string, std::string>> loadQueries() const
+        {
+            std::vector<std::pair<std::string, std::string>> queries;
+            std::string queriesPath = std::filesystem::path(__FILE__).parent_path().string() + "/queries";
+
+            try
+            {
+                for (const auto &entry : std::filesystem::directory_iterator(queriesPath))
+                {
+                    if (entry.is_regular_file() && entry.path().extension() == ".sql")
+                    {
+                        std::ifstream file(entry.path());
+                        if (file.is_open())
+                        {
+                            std::ostringstream content;
+                            content << file.rdbuf();
+                            queries.emplace_back(entry.path().stem().string(), content.str());
+                        }
+                    }
+                }
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Error loading queries: " << e.what() << "\n";
+            }
+
+            return queries;
+        }
     };
 }
 

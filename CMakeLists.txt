@@ -30,6 +30,7 @@ add_executable(${PROJECT_NAME}
     # modules
     app/modules/configuration/configuration.cpp
     app/modules/database/database.cpp
+    app/modules/database/SQLite_Database/SQLite_Database.cpp
 
     # models
     app/models/model.cpp

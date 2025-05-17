@@ -30,6 +30,8 @@ namespace app::modules::configuration
 
         // Database configuration
         std::string db_connection;
+        std::string db_path;
+        std::string db_file;
         std::string db_host;
         int db_port;
         std::string db_database;

@@ -6,6 +6,9 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <vector>
+#include <filesystem>
+#include <fstream>
 
 #include <SQLiteCpp/SQLiteCpp.h>
 

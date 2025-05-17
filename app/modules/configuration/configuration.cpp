@@ -14,11 +14,13 @@ namespace app::modules::configuration
           log_file_max_size(1048576),
           log_file_max_backups(3),
           log_file_compress(false),
-          db_connection("mysql"),
+          db_connection("sqlite"),
+          db_path("database"),
+          db_file("symantec.db"),
           db_host("localhost"),
           db_port(3306),
-          db_database("mydb"),
-          db_user("user"),
+          db_database("symantec"),
+          db_user("root"),
           db_password("password")
     {
         std::ifstream file(file_path);
@@ -42,6 +44,8 @@ namespace app::modules::configuration
                          << "log_file_compress=" << (log_file_compress ? "true" : "false") << "\n\n"
                          << "[Database]\n"
                          << "db_connection=" << db_connection << "\n"
+                         << "db_path=" << db_path << "\n"
+                         << "db_file=" << db_file << "\n"
                          << "db_host=" << db_host << "\n"
                          << "db_port=" << db_port << "\n"
                          << "db_database=" << db_database << "\n"
@@ -97,7 +101,7 @@ namespace app::modules::configuration
     {
         auto key_value_pairs = read();
 
-        for (const auto& pair : key_value_pairs)
+        for (const auto &pair : key_value_pairs)
         {
             if (pair.first == key)
             {

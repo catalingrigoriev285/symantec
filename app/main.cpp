@@ -12,6 +12,7 @@
 int main()
 {
     app::modules::configuration::Configuration config("symantec.ini");
+    app::modules::database::sqlite::SQLite_Database db(config.get("db_path").second, config.get("db_file").second);
 
     ImGuiConsoleBuffer consoleBuffer;
     std::ostream consoleStream(&consoleBuffer);

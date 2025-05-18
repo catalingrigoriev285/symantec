@@ -21,7 +21,7 @@ namespace app::models::signature
         SHA512 = 4, // Very strong, but uses more resources.
     };
 
-    inline const char* HashAlgorithm_to_string(HashAlgorithm algorithm)
+    inline const char *HashAlgorithm_to_string(HashAlgorithm algorithm)
     {
         switch (algorithm)
         {
@@ -58,9 +58,38 @@ namespace app::models::signature
 
         Signature(const std::string &name, const std::string &description, const std::vector<unsigned char> &hash, HashAlgorithm algorithm);
 
+        std::string getName() const { return name; }
+        std::string getDescription() const { return description; }
         std::string getValue() const { return value; }
         HashAlgorithm getAlgorithm() const { return algorithm; }
+        std::string getAlgorithmString() const
+        {
+            switch (algorithm)
+            {
+            case HashAlgorithm::SHA1:
+                return "SHA1";
+            case HashAlgorithm::SHA224:
+                return "SHA224";
+            case HashAlgorithm::SHA256:
+                return "SHA256";
+            case HashAlgorithm::SHA384:
+                return "SHA384";
+            case HashAlgorithm::SHA512:
+                return "SHA512";
+            default:
+                return "Unknown";
+            }
+        }
         std::vector<unsigned char> getHash() const { return hash; }
+        std::string getHashString() const
+        {
+            std::ostringstream oss;
+            for (const auto &byte : hash)
+            {
+                oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+            }
+            return oss.str();
+        }
         std::time_t getCreatedAt() const { return created_at; }
         std::time_t getUpdatedAt() const { return updated_at; }
 
@@ -79,7 +108,7 @@ namespace app::models::signature
         };
 
         ~Signature() = default;
-        
+
         std::vector<std::pair<std::string, std::string>> loadQueries() const
         {
             std::vector<std::pair<std::string, std::string>> queries;

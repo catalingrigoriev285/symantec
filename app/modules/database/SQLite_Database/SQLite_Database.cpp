@@ -73,18 +73,25 @@ namespace app::modules::database::sqlite
         //
     }
 
-    void SQLite_Database::execute_query(const std::string &query)
+    void SQLite_Database::execute_query(const std::string &query, const std::vector<std::string> &params)
     {
         std::string database_path = Database::get_path() + "/" + Database::get_file();
 
         try
         {
             SQLite::Database db(database_path, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-            db.exec(query);
+            SQLite::Statement stmt(db, query);
+
+            for (size_t i = 0; i < params.size(); ++i)
+            {
+                stmt.bind(static_cast<int>(i + 1), params[i]);
+            }
+
+            stmt.exec();
         }
-        catch (...)
+        catch (const std::exception &e)
         {
-            app::models::logs::Logs log("SQLite Database", "Error executing query: " + query, app::models::logs::enum_log_type::ERROR);
+            app::models::logs::Logs log("SQLite Database", "Error executing query: " + query + " - " + e.what(), app::models::logs::enum_log_type::ERROR);
         }
     }
 }

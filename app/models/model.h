@@ -12,6 +12,8 @@
 
 #include <SQLiteCpp/SQLiteCpp.h>
 
+#include "../../modules/configuration/configuration.h"
+
 namespace app::models
 {
     class Model
@@ -22,7 +24,11 @@ namespace app::models
 
         static SQLite::Database &db()
         {
-            static SQLite::Database database("database.sqlite", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+            app::modules::configuration::Configuration config("symantec.ini");
+
+            std::string database_path = config.get("db_path").second + "/" + config.get("db_file").second;
+
+            static SQLite::Database database(database_path, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
             return database;
         }
 
@@ -82,6 +88,29 @@ namespace app::models
             {
                 std::cerr << "SQLite error: " << e.what() << "\n";
             }
+        }
+
+        std::vector<std::map<std::string, std::string>> allAsVector()
+        {
+            std::vector<std::map<std::string, std::string>> results;
+            try
+            {
+                SQLite::Statement query(db(), "SELECT * FROM " + table);
+                while (query.executeStep())
+                {
+                    std::map<std::string, std::string> row;
+                    for (int i = 0; i < query.getColumnCount(); ++i)
+                    {
+                        row[query.getColumnName(i)] = query.getColumn(i).getText();
+                    }
+                    results.push_back(row);
+                }
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "SQLite error: " << e.what() << "\n";
+            }
+            return results;
         }
     };
 }

@@ -21,7 +21,7 @@ namespace app::modules::database::sqlite
         SQLite_Database(std::string path, std::string file);
         ~SQLite_Database();
 
-        void execute_query(const std::string &query);
+        void execute_query(const std::string &query, const std::vector<std::string> &params);
     };
 }
 

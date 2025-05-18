@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <streambuf>
+#include <string>
 
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"

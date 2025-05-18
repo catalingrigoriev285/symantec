@@ -356,10 +356,15 @@ int main()
 
             if (ImGui::Button("Add a new signature to database", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
-                active_frame = "administration_database_add";
+                active_frame = "administration_database_signatures_add";
+            }
+
+            if (ImGui::Button("Load all signatures from database", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
+            {
+                active_frame = "administration_database_signatures_load";
             }
         }
-        else if (active_frame == "administration_database_add")
+        else if (active_frame == "administration_database_signatures_add")
         {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Add a new signature to database");
@@ -403,7 +408,11 @@ int main()
                 {
                     app::models::signature::HashAlgorithm algorithm = static_cast<app::models::signature::HashAlgorithm>(selectedType);
 
-                    app::models::signature::Signature signature = app::models::signature::Signature("SHA1", "SHA1 file signature", hash, algorithm);
+                    app::models::signature::Signature signature = app::models::signature::Signature(
+                        std::string(signature_algorithm[selectedType]), std::string(signature_algorithm[selectedType]) + " file signature", hash, algorithm);
+
+                    db.execute_query("INSERT INTO signatures (name, description, value, algorithm, hash) VALUES (?, ?, ?, ?, ?)",
+                                     {signature.getName(), signature.getDescription(), signature.getHashString(), signature.getAlgorithmString(), "0x" + signature.getAlgorithmString()});
 
                     app::models::logs::Logs log("Signature Scanner", std::string(signature_hash) + " successfully added to database!", app::models::logs::INFO);
                     ImGui::OpenPopup("Success");
@@ -433,6 +442,29 @@ int main()
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::EndPopup();
+            }
+        }
+        else if (active_frame == "administration_database_signatures_load"){
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Text("Load all signatures from database");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Separator();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+            std::vector<std::map<std::string, std::string>> signatures_vect;
+            app::models::signature::Signature signatures;
+            signatures_vect = signatures.allAsVector();
+
+            if (signatures_vect.empty())
+            {
+                ImGui::Text("No signatures found in the database.");
+            }
+            else
+            {
+                for (const auto &signature : signatures_vect)
+                {
+                    ImGui::Text("Signature: %s", signature);
+                }
             }
         }
         else if (active_frame == "console")

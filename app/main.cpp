@@ -189,49 +189,75 @@ int main()
 
             if (ImGui::Button("Start scanning", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
-                app::core::scanner::signature_scanner::SignatureScanner signature_scanner;
-
-                std::string directory_path_str = directory_path;
-                std::vector<app::models::signature::Signature> signatures_scanned = signature_scanner.scanDirectory(directory_path_str, app::models::signature::HashAlgorithm::SHA256);
-
-                if (signatures_scanned.empty())
+                if (strlen(directory_path) == 0)
                 {
-                    // No signatures found
+                    ImGui::OpenPopup("Error");
                 }
                 else
                 {
-                    std::ostringstream oss;
-                    for (const auto &signature : signatures_scanned)
+                    try
                     {
-                        session.setVariable("signature", signature.getHashString(), true);
+                        app::core::scanner::signature_scanner::SignatureScanner signature_scanner;
 
-                        oss << "Signature scanned: " << signature.getHashString() << "\n";
-                    }
-                    consoleBuffer.buffer << oss.str();
+                        std::string directory_path_str = directory_path;
+                        std::vector<app::models::signature::Signature> signatures_scanned = signature_scanner.scanDirectory(directory_path_str, app::models::signature::HashAlgorithm::SHA256);
 
-                    app::models::signature::Signature db_signature;
-                    std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
-                    std::vector<std::pair<std::string, std::string>> session_signatures = session.getVariableVector("signature");
-                    for (const auto &signature : signatures_vect)
-                    {
-                        auto it = std::find_if(session_signatures.begin(), session_signatures.end(),
-                                               [&signature](const std::pair<std::string, std::string> &pair)
-                                               {
-                                                   return pair.second == signature.at("value");
-                                               });
-                        if (it != session_signatures.end())
+                        if (signatures_scanned.empty())
                         {
-                            app::models::logs::Logs log("Signature Scanner", "Signature found in database: " + signature.at("value"), app::models::logs::INFO);
-                            consoleBuffer.buffer << "Signature found in database: " << signature.at("value") << "\n";
-
-                            ImGui::OpenPopup("signature_found_alert");
+                            // No signatures found
                         }
+                        else
+                        {
+                            std::ostringstream oss;
+                            for (const auto &signature : signatures_scanned)
+                            {
+                                session.setVariable("signature", signature.getHashString(), true);
+
+                                oss << "Signature scanned: " << signature.getHashString() << "\n";
+                            }
+                            consoleBuffer.buffer << oss.str();
+
+                            app::models::signature::Signature db_signature;
+                            std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
+                            std::vector<std::pair<std::string, std::string>> session_signatures = session.getVariableVector("signature");
+                            for (const auto &signature : signatures_vect)
+                            {
+                                auto it = std::find_if(session_signatures.begin(), session_signatures.end(),
+                                                       [&signature](const std::pair<std::string, std::string> &pair)
+                                                       {
+                                                           return pair.second == signature.at("value");
+                                                       });
+                                if (it != session_signatures.end())
+                                {
+                                    app::models::logs::Logs log("Signature Scanner", "Signature found in database: " + signature.at("value"), app::models::logs::INFO);
+                                    consoleBuffer.buffer << "Signature found in database: " << signature.at("value") << "\n";
+
+                                    ImGui::OpenPopup("signature_found_alert");
+                                }
+                            }
+                        }
+                    }
+                    catch (const std::exception &e)
+                    {
+                        app::models::logs::Logs log("Signature Scanner", "Error: " + std::string(e.what()), app::models::logs::ERROR);
+                        consoleBuffer.buffer << "Error: " << e.what() << "\n";
                     }
                 }
             }
 
-            ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+            ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+            if (ImGui::BeginPopup("Error"))
+            {
+                ImGui::Text("Error: Please enter a valid directory path.");
+                if (ImGui::Button("Close"))
+                {
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+
+            ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
             if (ImGui::BeginPopupModal("signature_found_alert", NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
                 ImGui::Text("Signature found in database!");

@@ -13,6 +13,7 @@
 
 #include "modules/configuration/configuration.h"
 #include "modules/database/SQLite_Database/SQLite_Database.h"
+#include "modules/session/session.h"
 
 #include "models/logs/logs.h"
 #include "models/signature/signature.h"

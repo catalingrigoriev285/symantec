@@ -2,11 +2,11 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <ShlObj.h>
 #include <commdlg.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 #undef ERROR
-#include <ShlObj.h>
 
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 
@@ -14,6 +14,7 @@ int main()
 {
     app::modules::configuration::Configuration config("symantec.ini");
     app::modules::database::sqlite::SQLite_Database db(config.get("db_path").second, config.get("db_file").second);
+    app::modules::session::Session session;
 
     ImGuiConsoleBuffer consoleBuffer;
     std::ostream consoleStream(&consoleBuffer);
@@ -186,8 +187,46 @@ int main()
                 }
             }
 
-            if (ImGui::Button("Start scanning", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight))){
-                // Handle Start Scanning logic
+            if (ImGui::Button("Start scanning", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
+            {
+                app::core::scanner::signature_scanner::SignatureScanner signature_scanner;
+
+                std::string directory_path_str = directory_path;
+                std::vector<app::models::signature::Signature> signatures_scanned = signature_scanner.scanDirectory(directory_path_str, app::models::signature::HashAlgorithm::SHA256);
+
+                if (signatures_scanned.empty())
+                {
+                    // No signatures found
+                }
+                else
+                {
+                    std::ostringstream oss;
+                    for (const auto &signature : signatures_scanned)
+                    {
+                        session.setVariable("signature", signature.getHashString(), true);
+
+                        oss << "Signature scanned: " << signature.getHashString() << "\n";
+                    }
+                    consoleBuffer.buffer << oss.str();
+
+                    // verify if the signature is in the database
+                    app::models::signature::Signature db_signature;
+                    std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
+                    std::vector<std::pair<std::string, std::string>> session_signatures = session.getVariableVector("signature");
+                    for (const auto &signature : signatures_vect)
+                    {
+                        auto it = std::find_if(session_signatures.begin(), session_signatures.end(),
+                                               [&signature](const std::pair<std::string, std::string> &pair)
+                                               {
+                                                   return pair.second == signature.at("value");
+                                               });
+                        if (it != session_signatures.end())
+                        {
+                            app::models::logs::Logs log("Signature Scanner", "Signature found in database: " + signature.at("value"), app::models::logs::INFO);
+                            consoleBuffer.buffer << "Signature found in database: " << signature.at("value") << "\n";
+                        }
+                    }
+                }
             }
         }
         else if (active_frame == "updates")

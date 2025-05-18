@@ -31,6 +31,7 @@ add_executable(${PROJECT_NAME}
     app/modules/configuration/configuration.cpp
     app/modules/database/database.cpp
     app/modules/database/SQLite_Database/SQLite_Database.cpp
+    app/modules/session/session.cpp
 
     # models
     app/models/model.cpp

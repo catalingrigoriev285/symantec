@@ -8,7 +8,21 @@ namespace app::modules::session
         std::strcpy(k, key.c_str());
         char *v = new char[value.size() + 1];
         std::strcpy(v, value.c_str());
-        variables[std::shared_ptr<char>(k, [](char *p) { delete[] p; })] = std::shared_ptr<char>(v, [](char *p) { delete[] p; });
+        variables[std::shared_ptr<char>(k, [](char *p)
+                                        { delete[] p; })] = std::shared_ptr<char>(v, [](char *p)
+                                                                                  { delete[] p; });
+    }
+
+    void Session::setVariable(const std::string &key, const std::string &value, bool is_vector)
+    {
+        if (is_vector)
+        {
+            variables_vector.push_back(std::make_pair(key, value));
+        }
+        else
+        {
+            setVariable(key, value);
+        }
     }
 
     std::string Session::getVariable(const std::string &key) const
@@ -21,6 +35,29 @@ namespace app::modules::session
             }
         }
         return "";
+    }
+
+    std::vector<std::pair<std::string, std::string>> Session::getVariableVector(const std::string &key) const
+    {
+        std::vector<std::pair<std::string, std::string>> result;
+        for (const auto &pair : variables_vector)
+        {
+            if (pair.first == key)
+            {
+                result.push_back(pair);
+            }
+        }
+        return result;
+    }
+
+    std::vector<std::string> Session::getAllVariables() const
+    {
+        std::vector<std::string> allVariables;
+        for (const auto &pair : variables)
+        {
+            allVariables.push_back(std::string(pair.first.get()));
+        }
+        return allVariables;
     }
 
     bool Session::hasVariable(const std::string &key) const

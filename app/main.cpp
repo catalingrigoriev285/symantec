@@ -463,7 +463,7 @@ int main()
             {
                 for (const auto &signature : signatures_vect)
                 {
-                    ImGui::Text("Signature: %s", signature);
+                    ImGui::Text("Signature #%s: %s", signature.at("id").c_str(), signature.at("value").c_str());
                 }
             }
         }

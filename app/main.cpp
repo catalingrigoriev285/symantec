@@ -209,7 +209,6 @@ int main()
                     }
                     consoleBuffer.buffer << oss.str();
 
-                    // verify if the signature is in the database
                     app::models::signature::Signature db_signature;
                     std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
                     std::vector<std::pair<std::string, std::string>> session_signatures = session.getVariableVector("signature");
@@ -224,9 +223,25 @@ int main()
                         {
                             app::models::logs::Logs log("Signature Scanner", "Signature found in database: " + signature.at("value"), app::models::logs::INFO);
                             consoleBuffer.buffer << "Signature found in database: " << signature.at("value") << "\n";
+
+                            ImGui::OpenPopup("signature_found_alert");
                         }
                     }
                 }
+            }
+
+            ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+            if (ImGui::BeginPopupModal("signature_found_alert", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("Signature found in database!");
+                ImGui::Separator();
+
+                if (ImGui::Button("Close", ImVec2(120, 0)))
+                {
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
             }
         }
         else if (active_frame == "updates")
@@ -287,7 +302,8 @@ int main()
 
                 if (GetOpenFileNameW(&ofn) == TRUE)
                 {
-                    wcstombs(signature_hash, szFile, sizeof(signature_hash)); // Convert wide-char to narrow-char
+                    size_t convertedChars = 0;
+                    wcstombs_s(&convertedChars, signature_hash, sizeof(signature_hash), szFile, _TRUNCATE);
                 }
             }
 
@@ -487,8 +503,16 @@ int main()
                     app::models::signature::Signature signature = app::models::signature::Signature(
                         std::string(signature_algorithm[selectedType]), std::string(signature_algorithm[selectedType]) + " file signature", hash, algorithm);
 
-                    db.execute_query("INSERT INTO signatures (name, description, value, algorithm, hash) VALUES (?, ?, ?, ?, ?)",
-                                     {signature.getName(), signature.getDescription(), signature.getHashString(), signature.getAlgorithmString(), "0x" + signature.getAlgorithmString()});
+                    try
+                    {
+                        db.execute_query("INSERT INTO signatures (name, description, value, algorithm, hash) VALUES (?, ?, ?, ?, ?)",
+                                         {signature.getName(), signature.getDescription(), signature.getHashString(), signature.getAlgorithmString(), "0x" + signature.getAlgorithmString()});
+                    }
+                    catch (const std::exception &e)
+                    {
+                        app::models::logs::Logs log("Signature Scanner", "Failed to add signature to database: " + std::string(e.what()), app::models::logs::ERROR);
+                        ImGui::OpenPopup("Error");
+                    }
 
                     app::models::logs::Logs log("Signature Scanner", std::string(signature_hash) + " successfully added to database!", app::models::logs::INFO);
                     ImGui::OpenPopup("Success");

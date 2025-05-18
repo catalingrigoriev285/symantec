@@ -6,6 +6,7 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 #undef ERROR
+#include <ShlObj.h>
 
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 
@@ -134,7 +135,7 @@ int main()
             }
             if (ImGui::Button("Custom Scan", ImVec2(buttonWidth, buttonHeight)))
             {
-                // Handle Custom Scan logic
+                active_frame = "scanning_custom_frame";
             }
             ImGui::SameLine();
             if (ImGui::Button("Scheduled Scan", ImVec2(buttonWidth, buttonHeight)))
@@ -151,6 +152,42 @@ int main()
             if (ImGui::Selectable("View Scanning History"))
             {
                 // Handle Scanning History logic
+            }
+        }
+        else if (active_frame == "scanning_custom_frame")
+        {
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Text("Custom Scanning");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Separator();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+            static char directory_path[128] = "";
+
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+            ImGui::InputTextWithHint("##directory_path", "Enter file path here", directory_path, sizeof(directory_path));
+
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+            if (ImGui::Button("Browse", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
+            {
+                BROWSEINFO bi = {0};
+                bi.lpszTitle = TEXT("Select Directory");
+                LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+
+                if (pidl != NULL)
+                {
+                    wchar_t path[MAX_PATH];
+                    if (SHGetPathFromIDListW(pidl, path))
+                    {
+                        wcstombs(directory_path, path, sizeof(directory_path));
+                    }
+                    CoTaskMemFree(pidl);
+                }
+            }
+
+            if (ImGui::Button("Start scanning", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight))){
+                // Handle Start Scanning logic
             }
         }
         else if (active_frame == "updates")
@@ -444,7 +481,8 @@ int main()
                 ImGui::EndPopup();
             }
         }
-        else if (active_frame == "administration_database_signatures_load"){
+        else if (active_frame == "administration_database_signatures_load")
+        {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Load all signatures from database");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));

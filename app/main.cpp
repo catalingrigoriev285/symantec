@@ -8,7 +8,54 @@
 #include <GLFW/glfw3native.h>
 #undef ERROR
 
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+
+std::mutex scanMutex;
+std::condition_variable scanCondition;
+bool scanInProgress = false;
+
+void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consoleBuffer, app::modules::session::Session& session, app::modules::database::sqlite::SQLite_Database& db) {
+    std::lock_guard<std::mutex> lock(scanMutex);
+    scanInProgress = true;
+
+    try {
+        app::core::scanner::signature_scanner::SignatureScanner signature_scanner;
+        std::vector<app::models::signature::Signature> signatures_scanned = signature_scanner.scanDirectory(directory_path, app::models::signature::HashAlgorithm::SHA256);
+
+        if (signatures_scanned.empty()) {
+            consoleBuffer.buffer << "No signatures found.\n";
+        } else {
+            std::ostringstream oss;
+            for (const auto& signature : signatures_scanned) {
+                session.setVariable("signature", signature.getHashString(), true);
+                oss << "Signature scanned: " << signature.getHashString() << "\n";
+            }
+            consoleBuffer.buffer << oss.str();
+
+            app::models::signature::Signature db_signature;
+            std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
+            std::vector<std::pair<std::string, std::string>> session_signatures = session.getVariableVector("signature");
+            for (const auto& signature : signatures_vect) {
+                auto it = std::find_if(session_signatures.begin(), session_signatures.end(),
+                                       [&signature](const std::pair<std::string, std::string>& pair) {
+                                           return pair.second == signature.at("value");
+                                       });
+                if (it != session_signatures.end()) {
+                    consoleBuffer.buffer << "Signature found in database: " << signature.at("value") << "\n";
+                }
+            }
+        }
+    } catch (const std::exception& e) {
+        consoleBuffer.buffer << "Error: " << e.what() << "\n";
+    }
+
+    scanInProgress = false;
+    scanCondition.notify_all();
+}
 
 int main()
 {
@@ -53,7 +100,7 @@ int main()
     colors[ImGuiCol_WindowBg]               = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
     colors[ImGuiCol_ChildBg]                = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
     colors[ImGuiCol_PopupBg]                = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
-    colors[ImGuiCol_Border]                 = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
+    colors[ImGuiCol_Border]                 = ImVec4(0.43f, 0.43f, 0.43f, 0.50f);
     colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
     colors[ImGuiCol_FrameBg]                = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
     colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
@@ -336,54 +383,16 @@ int main()
                 }
                 else
                 {
-                    try
-                    {
-                        app::core::scanner::signature_scanner::SignatureScanner signature_scanner;
-
-                        std::string directory_path_str = directory_path;
-                        std::vector<app::models::signature::Signature> signatures_scanned = signature_scanner.scanDirectory(directory_path_str, app::models::signature::HashAlgorithm::SHA256);
-
-                        if (signatures_scanned.empty())
-                        {
-                            // No signatures found
-                        }
-                        else
-                        {
-                            std::ostringstream oss;
-                            for (const auto &signature : signatures_scanned)
-                            {
-                                session.setVariable("signature", signature.getHashString(), true);
-
-                                oss << "Signature scanned: " << signature.getHashString() << "\n";
-                            }
-                            consoleBuffer.buffer << oss.str();
-
-                            app::models::signature::Signature db_signature;
-                            std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
-                            std::vector<std::pair<std::string, std::string>> session_signatures = session.getVariableVector("signature");
-                            for (const auto &signature : signatures_vect)
-                            {
-                                auto it = std::find_if(session_signatures.begin(), session_signatures.end(),
-                                                       [&signature](const std::pair<std::string, std::string> &pair)
-                                                       {
-                                                           return pair.second == signature.at("value");
-                                                       });
-                                if (it != session_signatures.end())
-                                {
-                                    app::models::logs::Logs log("Signature Scanner", "Signature found in database: " + signature.at("value"), app::models::logs::INFO);
-                                    consoleBuffer.buffer << "Signature found in database: " << signature.at("value") << "\n";
-
-                                    ImGui::OpenPopup("signature_found_alert");
-                                }
-                            }
-                        }
-                    }
-                    catch (const std::exception &e)
-                    {
-                        app::models::logs::Logs log("Signature Scanner", "Error: " + std::string(e.what()), app::models::logs::ERROR);
-                        consoleBuffer.buffer << "Error: " << e.what() << "\n";
-                    }
+                    std::string directory_path_str = directory_path;
+                    std::thread scanningThread(startScanning, directory_path_str, std::ref(consoleBuffer), std::ref(session), std::ref(db));
+                    scanningThread.detach();
                 }
+            }
+
+            if (scanInProgress) {
+                ImGui::Text("Scanning in progress...");
+            } else {
+                ImGui::Text("Scanning complete.");
             }
 
             ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));

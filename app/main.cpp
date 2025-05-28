@@ -540,18 +540,14 @@ int main()
                 }
             }
 
-            if (ImGui::Button("Get file hash", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
-            {
+            if (ImGui::Button("Get file hash", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight))) {
                 std::string file_path = signature_hash;
 
                 std::ifstream file(file_path);
-                if (!file.good())
-                {
+                if (!file.good()) {
                     ImGui::OpenPopup("Error");
                     file_hash_result = "Error: File does not exist.";
-                }
-                else
-                {
+                } else {
                     app::models::signature::HashAlgorithm algorithm = static_cast<app::models::signature::HashAlgorithm>(selectedType);
 
                     app::core::scanner::signature_scanner::SignatureScanner scanner;
@@ -560,14 +556,20 @@ int main()
                     file_hash_result = "File Hash: ";
 
                     std::ostringstream oss;
-                    for (const auto &byte : file_hashes.getHash())
-                    {
+                    for (const auto &byte : file_hashes.getHash()) {
                         oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
                     }
                     file_hash_result += oss.str();
                     file_hash_only = oss.str();
 
                     file_hash_result += "\nHash Algorithm: " + std::string(app::models::signature::HashAlgorithm_to_string(file_hashes.getAlgorithm()));
+
+                    // Reset program path to the current directory where the main .exe resides
+                    char exePath[MAX_PATH];
+                    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+                    std::string currentDir = exePath;
+                    currentDir = currentDir.substr(0, currentDir.find_last_of("\\/"));
+                    SetCurrentDirectoryA(currentDir.c_str());
                 }
             }
 

@@ -1,13 +1,13 @@
 $buildFolderPath = "build"
 
 if (-not (Test-Path -Path $buildFolderPath)) {
-    New-Item -ItemType Directory -Path $buildFolderPath | Out-Null
+    New-Item -ItemType Directory -Path $buildFolderPath -Force | Out-Null
 }
 
 Push-Location -Path $buildFolderPath
 try {
-    cmake ../
-    cmake --build . --config Release
+    cmake ../ | Out-Null
+    cmake --build . --config Release | Out-Null
 } finally {
     Pop-Location
 }

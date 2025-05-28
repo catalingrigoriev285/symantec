@@ -137,7 +137,7 @@ int main()
 
         ImGui::SetNextWindowPos(ImVec2(0, 0));
         ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x * 0.25f, io.DisplaySize.y));
-        ImGui::Begin("menu_frame", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+        ImGui::Begin("menu_frame", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
         ImGui::Dummy(ImVec2(0.0f, 20.0f));
         ImGui::PushFont(largeFont);
@@ -148,7 +148,7 @@ int main()
         ImGui::Separator();
         ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
-        float buttonWidth = ImGui::GetContentRegionAvail().x - 20.0f;
+        float buttonWidth = ImGui::GetContentRegionAvail().x;
         float buttonHeight = 40.0f;
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 10));
 
@@ -189,7 +189,8 @@ int main()
 
         float windowHeight = ImGui::GetWindowHeight();
         float textHeight = ImGui::CalcTextSize("Version 1.0.0").y;
-        ImGui::SetCursorPosY(windowHeight - textHeight - 20);
+        float padding = 50.0f; 
+        ImGui::SetCursorPosY(windowHeight - textHeight - padding);
         ImGui::Separator();
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
         ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize("Version 1.0.0").x) * 0.5f);
@@ -734,14 +735,18 @@ int main()
         }
         else if (active_frame == "console")
         {
-            ImGui::BeginChild("ConsoleOutput", ImVec2(0, 0), true);
+            ImGui::BeginChild("ConsoleOutput", ImVec2(0, 0), false);
+            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
             ImGui::TextWrapped(consoleBuffer.buffer.str().c_str());
+            ImGui::PopStyleColor();
             ImGui::EndChild();
         }
         else if (active_frame == "about")
         {
             ImGui::BeginChild("AboutText", ImVec2(0, 0), false);
+            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
             ImGui::TextWrapped("Symantec is an open-source antivirus software developed as a university project. Designed to detect, prevent, and remove malware, it provides essential security features such as real-time scanning, signature-based detection, and heuristic analysis.\n\nCreated by Catalin Grigoriev");
+            ImGui::PopStyleColor();
             ImGui::EndChild();
         }
 

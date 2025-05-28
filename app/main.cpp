@@ -25,9 +25,17 @@ enum class ScanType {
     Scheduled
 };
 
+// Add statistics variables
+static int files_scanned = 0;
+static int threats_detected = 0;
+static int database_updates = 0;
+
 void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consoleBuffer, app::modules::session::Session& session, app::modules::database::sqlite::SQLite_Database& db, ScanType scanType) {
     std::lock_guard<std::mutex> lock(scanMutex);
     scanInProgress = true;
+
+    files_scanned = 0; // Reset for each scan
+    threats_detected = 0; // Reset for each scan
 
     try {
         app::core::scanner::signature_scanner::SignatureScanner signature_scanner;
@@ -63,6 +71,7 @@ void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consol
             std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
 
             for (const auto& signature : signatures_scanned) {
+                files_scanned++; // Increment files scanned
                 session.setVariable("signature", signature.getHashString(), true);
                 scan_details << "Signature scanned: " << signature.getHashString() << "\n";
 
@@ -72,6 +81,7 @@ void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consol
                                            return db_signature.at("value") == signature.getHashString();
                                        });
                 if (it != signatures_vect.end()) {
+                    threats_detected++; // Increment threats detected
                     consoleBuffer.buffer << "ALERT: Signature found in database: " << signature.getHashString() << "\n";
                     // Log the alert instead of interrupting the scan
                     app::models::logs::Logs log("Scanner", "Signature found: " + signature.getHashString(), app::models::logs::WARNING);
@@ -323,11 +333,11 @@ int main() {
             
             ImGui::SameLine();
             
-            ImGui::BeginChild("threats", ImVec2(cardWidth, cardHeight), true);
-            ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Threats");
+            ImGui::BeginChild("statistics", ImVec2(cardWidth, cardHeight), true);
+            ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Statistics");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            ImGui::Text("No threats detected");
-            ImGui::Text("Last threat: Never");
+            ImGui::Text("Files Scanned: %d", files_scanned);
+            ImGui::Text("Threats Detected: %d", threats_detected);
             ImGui::EndChild();
             
             ImGui::SameLine();
@@ -335,7 +345,7 @@ int main() {
             ImGui::BeginChild("updates", ImVec2(cardWidth, cardHeight), true);
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Updates");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            ImGui::Text("Database is up to date");
+            ImGui::Text("Database Updates: %d", database_updates);
             ImGui::Text("Last update: Today");
             ImGui::EndChild();
         }
@@ -482,7 +492,14 @@ int main() {
         }
         else if (active_frame == "updates")
         {
-            ImGui::Text("This is Frame 3.");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Text("Database Updates");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Separator();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+            ImGui::Text("Total Updates: %d", database_updates);
+            ImGui::Text("Last Update: Today");
         }
         else if (active_frame == "services")
         {

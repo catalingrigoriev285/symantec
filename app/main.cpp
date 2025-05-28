@@ -52,29 +52,38 @@ void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consol
                 break;
         }
 
+        std::ostringstream scan_details; // Declare scan_details here
+        scan_details << "Scan Type: " << (scanType == ScanType::Quick ? "Quick" : scanType == ScanType::Full ? "Full" : scanType == ScanType::Custom ? "Custom" : "Scheduled") << "\n";
+
         if (signatures_scanned.empty()) {
             consoleBuffer.buffer << "No signatures found.\n";
+            scan_details << "No signatures found.\n";
         } else {
-            std::ostringstream oss;
             for (const auto& signature : signatures_scanned) {
                 session.setVariable("signature", signature.getHashString(), true);
-                oss << "Signature scanned: " << signature.getHashString() << "\n";
-            }
-            consoleBuffer.buffer << oss.str();
-
-            app::models::signature::Signature db_signature;
-            std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
-            std::vector<std::pair<std::string, std::string>> session_signatures = session.getVariableVector("signature");
-            for (const auto& signature : signatures_vect) {
-                auto it = std::find_if(session_signatures.begin(), session_signatures.end(),
-                                       [&signature](const std::pair<std::string, std::string>& pair) {
-                                           return pair.second == signature.at("value");
-                                       });
-                if (it != session_signatures.end()) {
-                    consoleBuffer.buffer << "Signature found in database: " << signature.at("value") << "\n";
-                }
+                scan_details << "Signature scanned: " << signature.getHashString() << "\n";
             }
         }
+
+        session.setVariable("scan_history", scan_details.str(), true);
+
+        app::models::signature::Signature db_signature;
+        std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
+        std::vector<std::pair<std::string, std::string>> session_signatures = session.getVariableVector("signature");
+        for (const auto& signature : signatures_vect) {
+            auto it = std::find_if(session_signatures.begin(), session_signatures.end(),
+                                   [&signature](const std::pair<std::string, std::string>& pair) {
+                                       return pair.second == signature.at("value");
+                                   });
+            if (it != session_signatures.end()) {
+                consoleBuffer.buffer << "Signature found in database: " << signature.at("value") << "\n";
+            }
+        }
+
+        // Removed redundant declaration of scan_details
+        // Save scan details to session history
+        session.setVariable("scan_history", scan_details.str(), true);
+
     } catch (const std::exception& e) {
         consoleBuffer.buffer << "Error: " << e.what() << "\n";
     }
@@ -365,7 +374,7 @@ int main()
 
             if (ImGui::Selectable("View Scanning History"))
             {
-                // Handle Scanning History logic
+                active_frame = "scanning_history";
             }
         }
         else if (active_frame == "scanning_custom_frame")
@@ -443,6 +452,29 @@ int main()
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::EndPopup();
+            }
+        }
+        else if (active_frame == "scanning_history")
+        {
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Text("Scanning History");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Separator();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+            std::vector<std::pair<std::string, std::string>> scan_history = session.getVariableVector("scan_history");
+
+            if (scan_history.empty())
+            {
+                ImGui::Text("No scanning history found.");
+            }
+            else
+            {
+                for (const auto& scan : scan_history)
+                {
+                    ImGui::TextWrapped(scan.second.c_str());
+                    ImGui::Separator();
+                }
             }
         }
         else if (active_frame == "updates")

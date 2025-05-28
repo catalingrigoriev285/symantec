@@ -263,6 +263,9 @@ int main() {
         {
             active_frame = "services";
         }
+        if (ImGui::Button("  Analytics", ImVec2(buttonWidth, buttonHeight))) {
+            active_frame = "analytics";
+        }
         if (ImGui::Button("  Settings", ImVec2(buttonWidth, buttonHeight)))
         {
             active_frame = "settings";
@@ -836,6 +839,27 @@ int main() {
             ImGui::TextWrapped("Symantec is an open-source antivirus software developed as a university project. Designed to detect, prevent, and remove malware, it provides essential security features such as real-time scanning, signature-based detection, and heuristic analysis.\n\nCreated by Catalin Grigoriev");
             ImGui::PopStyleColor();
             ImGui::EndChild();
+        }
+        else if (active_frame == "analytics") {
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Text("Running Processes");
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+            ImGui::Separator();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+            static std::vector<std::string> processes;
+
+            if (processes.empty()) {
+                processes = app::core::analytics::getRunningProcesses();
+            }
+
+            if (processes.empty()) {
+                ImGui::Text("No processes found.");
+            } else {
+                for (const auto& process : processes) {
+                    ImGui::Text("%s", process.c_str());
+                }
+            }
         }
 
         ImGui::PopStyleVar();

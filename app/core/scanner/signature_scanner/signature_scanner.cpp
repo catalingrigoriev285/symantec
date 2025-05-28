@@ -78,7 +78,8 @@ namespace app::core::scanner::signature_scanner
             throw std::runtime_error("SHA1_Final failed");
         }
 
-        app::modules::configuration::Configuration config("symantec.ini");
+        // Use the singleton instance of Configuration
+        app::modules::configuration::Configuration &config = app::modules::configuration::Configuration::getInstance();
         if (config.exists() && config.get("log_enabled").second == "true")
         {
             app::models::logs::Logs log("Signature Scanner", "Scanning file: " + filePath, app::models::logs::INFO);
@@ -132,7 +133,8 @@ namespace app::core::scanner::signature_scanner
             throw std::runtime_error("SHA224_Final failed");
         }
 
-        app::modules::configuration::Configuration config("symantec.ini");
+        // Use the singleton instance of Configuration
+        app::modules::configuration::Configuration &config = app::modules::configuration::Configuration::getInstance();
         if (config.exists() && config.get("log_enabled").second == "true")
         {
             app::models::logs::Logs log("Signature Scanner", "Scanning file: " + filePath, app::models::logs::INFO);
@@ -186,7 +188,8 @@ namespace app::core::scanner::signature_scanner
             throw std::runtime_error("SHA256_Final failed");
         }
 
-        app::modules::configuration::Configuration config("symantec.ini");
+        // Use the singleton instance of Configuration
+        app::modules::configuration::Configuration &config = app::modules::configuration::Configuration::getInstance();
         if (config.exists() && config.get("log_enabled").second == "true")
         {
             app::models::logs::Logs log("Signature Scanner", "Scanning file: " + filePath, app::models::logs::INFO);
@@ -240,7 +243,8 @@ namespace app::core::scanner::signature_scanner
             throw std::runtime_error("SHA384_Final failed");
         }
 
-        app::modules::configuration::Configuration config("symantec.ini");
+        // Use the singleton instance of Configuration
+        app::modules::configuration::Configuration &config = app::modules::configuration::Configuration::getInstance();
         if (config.exists() && config.get("log_enabled").second == "true")
         {
             app::models::logs::Logs log("Signature Scanner", "Scanning file: " + filePath, app::models::logs::INFO);
@@ -294,7 +298,8 @@ namespace app::core::scanner::signature_scanner
             throw std::runtime_error("SHA512_Final failed");
         }
 
-        app::modules::configuration::Configuration config("symantec.ini");
+        // Use the singleton instance of Configuration
+        app::modules::configuration::Configuration &config = app::modules::configuration::Configuration::getInstance();
         if (config.exists() && config.get("log_enabled").second == "true")
         {
             app::models::logs::Logs log("Signature Scanner", "Scanning file: " + filePath, app::models::logs::INFO);

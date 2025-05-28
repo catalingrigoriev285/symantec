@@ -52,36 +52,33 @@ void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consol
                 break;
         }
 
-        std::ostringstream scan_details; // Declare scan_details here
+        std::ostringstream scan_details;
         scan_details << "Scan Type: " << (scanType == ScanType::Quick ? "Quick" : scanType == ScanType::Full ? "Full" : scanType == ScanType::Custom ? "Custom" : "Scheduled") << "\n";
 
         if (signatures_scanned.empty()) {
             consoleBuffer.buffer << "No signatures found.\n";
             scan_details << "No signatures found.\n";
         } else {
+            app::models::signature::Signature db_signature;
+            std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
+
             for (const auto& signature : signatures_scanned) {
                 session.setVariable("signature", signature.getHashString(), true);
                 scan_details << "Signature scanned: " << signature.getHashString() << "\n";
+
+                // Check if the scanned signature exists in the database
+                auto it = std::find_if(signatures_vect.begin(), signatures_vect.end(),
+                                       [&signature](const std::map<std::string, std::string>& db_signature) {
+                                           return db_signature.at("value") == signature.getHashString();
+                                       });
+                if (it != signatures_vect.end()) {
+                    consoleBuffer.buffer << "ALERT: Signature found in database: " << signature.getHashString() << "\n";
+                    // Log the alert instead of interrupting the scan
+                    app::models::logs::Logs log("Scanner", "Signature found: " + signature.getHashString(), app::models::logs::WARNING);
+                }
             }
         }
 
-        session.setVariable("scan_history", scan_details.str(), true);
-
-        app::models::signature::Signature db_signature;
-        std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
-        std::vector<std::pair<std::string, std::string>> session_signatures = session.getVariableVector("signature");
-        for (const auto& signature : signatures_vect) {
-            auto it = std::find_if(session_signatures.begin(), session_signatures.end(),
-                                   [&signature](const std::pair<std::string, std::string>& pair) {
-                                       return pair.second == signature.at("value");
-                                   });
-            if (it != session_signatures.end()) {
-                consoleBuffer.buffer << "Signature found in database: " << signature.at("value") << "\n";
-            }
-        }
-
-        // Removed redundant declaration of scan_details
-        // Save scan details to session history
         session.setVariable("scan_history", scan_details.str(), true);
 
     } catch (const std::exception& e) {
@@ -92,9 +89,15 @@ void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consol
     scanCondition.notify_all();
 }
 
-int main()
-{
-    app::modules::configuration::Configuration config("symantec.ini");
+int main() {
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    std::string currentDir = exePath;
+    currentDir = currentDir.substr(0, currentDir.find_last_of("\\/"));
+    std::string configFilePath = currentDir + "/symantec.ini";
+
+    app::modules::configuration::Configuration &config = app::modules::configuration::Configuration::getInstance(configFilePath);
+
     app::modules::database::sqlite::SQLite_Database db(config.get("db_path").second, config.get("db_file").second);
     app::modules::session::Session session;
 

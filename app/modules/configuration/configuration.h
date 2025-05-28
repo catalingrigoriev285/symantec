@@ -48,6 +48,12 @@ namespace app::modules::configuration
         std::pair<std::string, std::string> get(std::string key);
         void set(std::string key, std::string value);
         void save();
+
+        static Configuration &getInstance(const std::string& configFilePath = "symantec.ini")
+        {
+            static Configuration instance(configFilePath);
+            return instance;
+        }
     };
 }
 

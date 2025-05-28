@@ -6,8 +6,8 @@ if (-not (Test-Path -Path $buildFolderPath)) {
 
 Push-Location -Path $buildFolderPath
 try {
-    cmake ../ | Out-Null
-    cmake --build . --config Release | Out-Null
+    cmake ../
+    cmake --build . --config Release
 } finally {
     Pop-Location
 }

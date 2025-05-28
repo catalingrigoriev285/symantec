@@ -1,0 +1,9 @@
+C:/Users/catal/Documents/GitHub/symantec/build/CMakeFiles/symantec.dir
+C:/Users/catal/Documents/GitHub/symantec/build/CMakeFiles/INSTALL.dir
+C:/Users/catal/Documents/GitHub/symantec/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/catal/Documents/GitHub/symantec/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/catal/Documents/GitHub/symantec/build/libs/sqlite/CMakeFiles/SQLiteCpp.dir
+C:/Users/catal/Documents/GitHub/symantec/build/libs/sqlite/CMakeFiles/INSTALL.dir
+C:/Users/catal/Documents/GitHub/symantec/build/libs/sqlite/CMakeFiles/ALL_BUILD.dir
+C:/Users/catal/Documents/GitHub/symantec/build/libs/sqlite/sqlite3/CMakeFiles/sqlite3.dir
+C:/Users/catal/Documents/GitHub/symantec/build/libs/sqlite/sqlite3/CMakeFiles/INSTALL.dir

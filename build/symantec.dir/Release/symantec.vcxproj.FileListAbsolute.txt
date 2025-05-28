@@ -1,0 +1,3 @@
+C:\Users\catal\Documents\GitHub\symantec\build\Release\libcrypto-3-x64.dll
+C:\Users\catal\Documents\GitHub\symantec\build\Release\glfw3.dll
+C:\Users\catal\Documents\GitHub\symantec\build\symantec.dir\Release\symantec.vcxproj.Up2Date

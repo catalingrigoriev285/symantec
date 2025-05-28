@@ -1,0 +1,20 @@
+^C:\USERS\CATAL\DOCUMENTS\GITHUB\SYMANTEC\BUILD\CMAKEFILES\A6E2F8DB39CCB145FA675952F69058C9\SQLITECPP_CPPLINT.RULE
+setlocal
+C:\Users\catal\AppData\Local\Programs\Python\Python312\python.exe C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/cpplint.py --output=vs7 --verbose=3 --linelength=120 C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/src/Backup.cpp C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/src/Column.cpp C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/src/Database.cpp C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/src/Exception.cpp C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/src/Savepoint.cpp C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/src/Statement.cpp C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/src/Transaction.cpp C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/SQLiteCpp.h C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/Assertion.h C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/Backup.h C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/Column.h C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/Database.h C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/Exception.h C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/Savepoint.h C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/Statement.h C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/Transaction.h C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/VariadicBind.h C:/Users/catal/Documents/GitHub/symantec/libs/sqlite/include/SQLiteCpp/ExecuteMany.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\CATAL\DOCUMENTS\GITHUB\SYMANTEC\LIBS\SQLITE\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/catal/Documents/GitHub/symantec -BC:/Users/catal/Documents/GitHub/symantec/build --check-stamp-file C:/Users/catal/Documents/GitHub/symantec/build/libs/sqlite/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

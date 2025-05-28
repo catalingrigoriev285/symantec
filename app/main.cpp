@@ -37,20 +37,16 @@ int main()
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
 
-    // Custom modern style
     ImGuiStyle& style = ImGui::GetStyle();
     
-    // Load fonts
     ImFont* defaultFont = io.Fonts->AddFontDefault();
     
-    // Configure and add a larger font
     ImFontConfig fontConfig;
-    fontConfig.SizePixels = 24.0f; // Set the desired font size
+    fontConfig.SizePixels = 24.0f;
     ImFont* largeFont = io.Fonts->AddFontDefault(&fontConfig);
     
     io.Fonts->Build();
 
-    // Colors
     ImVec4* colors = style.Colors;
     colors[ImGuiCol_Text]                   = ImVec4(0.95f, 0.95f, 0.95f, 1.00f);
     colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
@@ -101,7 +97,6 @@ int main()
     colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
     colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
-    // Style
     style.WindowPadding = ImVec2(15, 15);
     style.WindowRounding = 5.0f;
     style.FramePadding = ImVec2(5, 5);
@@ -140,17 +135,15 @@ int main()
         ImGuiStyle &style = ImGui::GetStyle();
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 
-        // Main menu window
         ImGui::SetNextWindowPos(ImVec2(0, 0));
         ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x * 0.25f, io.DisplaySize.y));
         ImGui::Begin("menu_frame", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 
-        // Logo and title
         ImGui::Dummy(ImVec2(0.0f, 20.0f));
-        ImGui::PushFont(largeFont); // Use the larger font
+        ImGui::PushFont(largeFont);
         ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize("SYMANTEC").x) * 0.5f);
         ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "SYMANTEC");
-        ImGui::PopFont(); // Pop the larger font
+        ImGui::PopFont();
         ImGui::Dummy(ImVec2(0.0f, 20.0f));
         ImGui::Separator();
         ImGui::Dummy(ImVec2(0.0f, 20.0f));
@@ -159,7 +152,6 @@ int main()
         float buttonHeight = 40.0f;
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 10));
 
-        // Menu buttons with icons
         if (ImGui::Button("  Home", ImVec2(buttonWidth, buttonHeight)))
         {
             active_frame = "home";
@@ -195,7 +187,6 @@ int main()
 
         ImGui::PopStyleVar();
 
-        // Version info at bottom
         float windowHeight = ImGui::GetWindowHeight();
         float textHeight = ImGui::CalcTextSize("Version 1.0.0").y;
         ImGui::SetCursorPosY(windowHeight - textHeight - 20);
@@ -206,12 +197,10 @@ int main()
 
         ImGui::End();
 
-        // Main content window
         ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.25f, 0));
         ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x * 0.75f, io.DisplaySize.y));
         ImGui::Begin("main_frame", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 
-        // Add a subtle gradient background
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
         ImVec2 window_pos = ImGui::GetWindowPos();
         ImVec2 window_size = ImGui::GetWindowSize();
@@ -226,23 +215,19 @@ int main()
             ImGui::GetColorU32(ImVec4(0.13f, 0.14f, 0.15f, 1.0f))
         );
 
-        // Content padding
         ImGui::Dummy(ImVec2(0.0f, 20.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(20, 20));
 
         if (active_frame == "home")
         {
-            // Home page content
             ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Welcome to Symantec Antivirus");
             ImGui::PopFont();
             ImGui::Dummy(ImVec2(0.0f, 20.0f));
             
-            // Status cards
             float cardWidth = (ImGui::GetContentRegionAvail().x - 20.0f) / 3.0f;
             float cardHeight = 120.0f;
             
-            // Protection Status Card
             ImGui::BeginChild("protection_status", ImVec2(cardWidth, cardHeight), true);
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Protection Status");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -252,7 +237,6 @@ int main()
             
             ImGui::SameLine();
             
-            // Threats Card
             ImGui::BeginChild("threats", ImVec2(cardWidth, cardHeight), true);
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Threats");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -262,7 +246,6 @@ int main()
             
             ImGui::SameLine();
             
-            // Updates Card
             ImGui::BeginChild("updates", ImVec2(cardWidth, cardHeight), true);
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Updates");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -272,7 +255,6 @@ int main()
         }
         else if (active_frame == "scanning")
         {
-            // Scanning page content
             ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Scanning Options");
             ImGui::PopFont();
@@ -283,7 +265,6 @@ int main()
 
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 10));
 
-            // Scan buttons with improved styling
             if (ImGui::Button("Quick Scan", ImVec2(buttonWidth, buttonHeight)))
             {
                 // Handle Quick Scan logic
@@ -575,7 +556,6 @@ int main()
             ImGui::Separator();
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-            // LOG_ENABLED
             static bool log_enabled = false;
 
             if (config.exists() && config.get("log_enabled").second == "true")
@@ -599,7 +579,6 @@ int main()
             ImGui::Text("Display logs in console");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-            // LOG_WRITE_TO_FILE
             static bool log_write_to_file = false;
             if (config.exists() && config.get("log_write_to_file").second == "true")
             {
@@ -766,7 +745,7 @@ int main()
             ImGui::EndChild();
         }
 
-        ImGui::PopStyleVar(); // Pop the window padding style
+        ImGui::PopStyleVar();
 
         ImGui::End();
 

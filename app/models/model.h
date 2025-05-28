@@ -22,6 +22,8 @@ namespace app::models
         std::string table;
         std::map<std::string, std::string> attributes;
 
+        static int modelCount;
+
         static SQLite::Database &db()
         {
             app::modules::configuration::Configuration config("symantec.ini");
@@ -33,7 +35,15 @@ namespace app::models
         }
 
     public:
-        Model(const std::string &tableName) : table(tableName) {}
+        Model(const std::string &tableName) : table(tableName)
+        {
+            ++modelCount;
+        }
+
+        static int getModelCount()
+        {
+            return modelCount;
+        }
 
         void set(const std::string &key, const std::string &value)
         {

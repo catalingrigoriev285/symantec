@@ -18,6 +18,8 @@ std::mutex scanMutex;
 std::condition_variable scanCondition;
 bool scanInProgress = false;
 
+int app::models::Model::modelCount = 0;
+
 enum class ScanType {
     Quick,
     Full,
@@ -25,7 +27,6 @@ enum class ScanType {
     Scheduled
 };
 
-// Add statistics variables
 static int files_scanned = 0;
 static int threats_detected = 0;
 static int database_updates = 0;
@@ -34,8 +35,8 @@ void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consol
     std::lock_guard<std::mutex> lock(scanMutex);
     scanInProgress = true;
 
-    files_scanned = 0; // Reset for each scan
-    threats_detected = 0; // Reset for each scan
+    files_scanned = 0;
+    threats_detected = 0;
 
     try {
         app::core::scanner::signature_scanner::SignatureScanner signature_scanner;

@@ -18,13 +18,39 @@ std::mutex scanMutex;
 std::condition_variable scanCondition;
 bool scanInProgress = false;
 
-void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consoleBuffer, app::modules::session::Session& session, app::modules::database::sqlite::SQLite_Database& db) {
+enum class ScanType {
+    Quick,
+    Full,
+    Custom,
+    Scheduled
+};
+
+void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consoleBuffer, app::modules::session::Session& session, app::modules::database::sqlite::SQLite_Database& db, ScanType scanType) {
     std::lock_guard<std::mutex> lock(scanMutex);
     scanInProgress = true;
 
     try {
         app::core::scanner::signature_scanner::SignatureScanner signature_scanner;
-        std::vector<app::models::signature::Signature> signatures_scanned = signature_scanner.scanDirectory(directory_path, app::models::signature::HashAlgorithm::SHA256);
+        std::vector<app::models::signature::Signature> signatures_scanned;
+
+        switch (scanType) {
+            case ScanType::Quick:
+                consoleBuffer.buffer << "Performing Quick Scan...\n";
+                signatures_scanned = signature_scanner.scanDirectory(directory_path, app::models::signature::HashAlgorithm::SHA256);
+                break;
+            case ScanType::Full:
+                consoleBuffer.buffer << "Performing Full Scan...\n";
+                signatures_scanned = signature_scanner.scanDirectory(directory_path, app::models::signature::HashAlgorithm::SHA256);
+                break;
+            case ScanType::Custom:
+                consoleBuffer.buffer << "Performing Custom Scan...\n";
+                signatures_scanned = signature_scanner.scanDirectory(directory_path, app::models::signature::HashAlgorithm::SHA256);
+                break;
+            case ScanType::Scheduled:
+                consoleBuffer.buffer << "Performing Scheduled Scan...\n";
+                signatures_scanned = signature_scanner.scanDirectory(directory_path, app::models::signature::HashAlgorithm::SHA256);
+                break;
+        }
 
         if (signatures_scanned.empty()) {
             consoleBuffer.buffer << "No signatures found.\n";
@@ -313,23 +339,22 @@ int main()
 
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 10));
 
-            if (ImGui::Button("Quick Scan", ImVec2(buttonWidth, buttonHeight)))
-            {
-                // Handle Quick Scan logic
+            if (ImGui::Button("Quick Scan", ImVec2(buttonWidth, buttonHeight))) {
+                std::thread scanningThread(startScanning, "C:/", std::ref(consoleBuffer), std::ref(session), std::ref(db), ScanType::Quick);
+                scanningThread.detach();
             }
             ImGui::SameLine();
-            if (ImGui::Button("Full Scan", ImVec2(buttonWidth, buttonHeight)))
-            {
-                // Handle Full Scan logic
+            if (ImGui::Button("Full Scan", ImVec2(buttonWidth, buttonHeight))) {
+                std::thread scanningThread(startScanning, "C:/", std::ref(consoleBuffer), std::ref(session), std::ref(db), ScanType::Full);
+                scanningThread.detach();
             }
-            if (ImGui::Button("Custom Scan", ImVec2(buttonWidth, buttonHeight)))
-            {
+            if (ImGui::Button("Custom Scan", ImVec2(buttonWidth, buttonHeight))) {
                 active_frame = "scanning_custom_frame";
             }
             ImGui::SameLine();
-            if (ImGui::Button("Scheduled Scan", ImVec2(buttonWidth, buttonHeight)))
-            {
-                // Handle Scheduled Scan logic
+            if (ImGui::Button("Scheduled Scan", ImVec2(buttonWidth, buttonHeight))) {
+                std::thread scanningThread(startScanning, "C:/", std::ref(consoleBuffer), std::ref(session), std::ref(db), ScanType::Scheduled);
+                scanningThread.detach();
             }
 
             ImGui::PopStyleVar();
@@ -384,7 +409,7 @@ int main()
                 else
                 {
                     std::string directory_path_str = directory_path;
-                    std::thread scanningThread(startScanning, directory_path_str, std::ref(consoleBuffer), std::ref(session), std::ref(db));
+                    std::thread scanningThread(startScanning, directory_path_str, std::ref(consoleBuffer), std::ref(session), std::ref(db), ScanType::Custom);
                     scanningThread.detach();
                 }
             }

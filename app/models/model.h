@@ -40,6 +40,11 @@ namespace app::models
             ++modelCount;
         }
 
+        virtual ~Model()
+        {
+            --modelCount;
+        }
+
         static int getModelCount()
         {
             return modelCount;

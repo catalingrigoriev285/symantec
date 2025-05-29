@@ -127,6 +127,36 @@ namespace app::models
             }
             return results;
         }
+
+        bool operator==(const Model &other) const
+        {
+            return this->attributes == other.attributes;
+        }
+
+        bool operator!=(const Model &other) const
+        {
+            return !(*this == other);
+        }
+
+        bool operator<(const Model &other) const
+        {
+            return this->attributes.size() < other.attributes.size();
+        }
+
+        bool operator>(const Model &other) const
+        {
+            return this->attributes.size() > other.attributes.size();
+        }
+
+        bool operator<=(const Model &other) const
+        {
+            return !(*this > other);
+        }
+
+        bool operator>=(const Model &other) const
+        {
+            return !(*this < other);
+        }
     };
 }
 

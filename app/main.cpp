@@ -72,19 +72,18 @@ void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consol
             std::vector<std::map<std::string, std::string>> signatures_vect = db_signature.allAsVector();
 
             for (const auto& signature : signatures_scanned) {
-                files_scanned++; // Increment files scanned
+                files_scanned++;
                 session.setVariable("signature", signature.getHashString(), true);
                 scan_details << "Signature scanned: " << signature.getHashString() << "\n";
 
-                // Check if the scanned signature exists in the database
                 auto it = std::find_if(signatures_vect.begin(), signatures_vect.end(),
                                        [&signature](const std::map<std::string, std::string>& db_signature) {
                                            return db_signature.at("value") == signature.getHashString();
                                        });
                 if (it != signatures_vect.end()) {
-                    threats_detected++; // Increment threats detected
+                    threats_detected++;
                     consoleBuffer.buffer << "ALERT: Signature found in database: " << signature.getHashString() << "\n";
-                    // Log the alert instead of interrupting the scan
+
                     app::models::logs::Logs log("Scanner", "Signature found: " + signature.getHashString(), app::models::logs::WARNING);
                 }
             }
@@ -105,7 +104,7 @@ int main() {
     GetModuleFileNameA(NULL, exePath, MAX_PATH);
     std::string currentDir = exePath;
     currentDir = currentDir.substr(0, currentDir.find_last_of("\\/"));
-    delete[] exePath; // Dealocare memorie
+    delete[] exePath;
 
     std::string configFilePath = currentDir + "/symantec.ini";
 
@@ -151,12 +150,12 @@ int main() {
     (void)io;
 
     ImFontConfig* fontConfig = new ImFontConfig();
-    fontConfig->SizePixels = 20.0f; // Reduced font size
-    fontConfig->OversampleH = 3; // Higher horizontal oversampling
-    fontConfig->OversampleV = 3; // Higher vertical oversampling
-    fontConfig->PixelSnapH = false; // Disable pixel snapping for smoother rendering
+    fontConfig->SizePixels = 20.0f;
+    fontConfig->OversampleH = 3;
+    fontConfig->OversampleV = 3;
+    fontConfig->PixelSnapH = false;
     ImFont* largeFont = io.Fonts->AddFontDefault(fontConfig);
-    delete fontConfig; // Dealocare memorie
+    delete fontConfig;
 
     io.Fonts->Build();
 
@@ -343,30 +342,30 @@ int main() {
             ImGui::PopFont();
             ImGui::Dummy(ImVec2(0.0f, 20.0f));
             
-            float cardHeight = 160.0f; // Increased height for better visibility
+            float cardHeight = 160.0f;
             
             ImGui::BeginChild("protection_status", ImVec2(ImGui::GetContentRegionAvail().x, cardHeight), true);
-            ImGui::Dummy(ImVec2(0.0f, 5.0f)); // Add padding
+            ImGui::Dummy(ImVec2(0.0f, 5.0f));
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Protection Status");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::TextWrapped("Your system is protected");
             ImGui::TextWrapped("Last scan: Today");
             ImGui::EndChild();
             
-            ImGui::Dummy(ImVec2(0.0f, 10.0f)); // Add spacing between containers
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
             
             ImGui::BeginChild("statistics", ImVec2(ImGui::GetContentRegionAvail().x, cardHeight), true);
-            ImGui::Dummy(ImVec2(0.0f, 5.0f)); // Add padding
+            ImGui::Dummy(ImVec2(0.0f, 5.0f));
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Statistics");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::TextWrapped("Files Scanned: %d", files_scanned);
             ImGui::TextWrapped("Threats Detected: %d", threats_detected);
             ImGui::EndChild();
             
-            ImGui::Dummy(ImVec2(0.0f, 10.0f)); // Add spacing between containers
+            ImGui::Dummy(ImVec2(0.0f, 10.0f));
             
             ImGui::BeginChild("updates", ImVec2(ImGui::GetContentRegionAvail().x, cardHeight), true);
-            ImGui::Dummy(ImVec2(0.0f, 5.0f)); // Add padding
+            ImGui::Dummy(ImVec2(0.0f, 5.0f));
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Updates");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::TextWrapped("Database Updates: %d", database_updates);
@@ -608,7 +607,6 @@ int main() {
 
                     file_hash_result += "\nHash Algorithm: " + std::string(app::models::signature::HashAlgorithm_to_string(file_hashes.getAlgorithm()));
 
-                    // Reset program path to the current directory where the main .exe resides
                     char exePath[MAX_PATH];
                     GetModuleFileNameA(NULL, exePath, MAX_PATH);
                     std::string currentDir = exePath;

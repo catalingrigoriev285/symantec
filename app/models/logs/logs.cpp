@@ -17,25 +17,43 @@ namespace app::models::logs
         if (config.exists() && config.get("log_write_to_file").second == "true")
         {
             std::filesystem::path log_folder = "logs";
-            if (std::filesystem::exists(log_folder) || config.get("create_logs_folder").second == "true")
+            // if (std::filesystem::exists(log_folder) || config.get("create_logs_folder").second == "true")
+            // {
+            //     if (!std::filesystem::exists(log_folder))
+            //     {
+            //         std::filesystem::create_directory(log_folder);
+            //     }
+
+            //     std::filesystem::path log_file = log_folder / config.get("log_file_path").second;
+
+            //     std::ofstream file(log_file, std::ios::app);
+            //     if (file.is_open())
+            //     {
+            //         file << "[" << &this->created_at << "](" << std::put_time(std::localtime(&this->created_at), "%Y-%m-%d %H:%M:%S") << ") " << this->title << ": " << this->description << "\n";
+            //         file.close();
+            //     }
+            //     else
+            //     {
+            //         std::cerr << "Unable to open log file: " << log_file << std::endl;
+            //     }
+            // }
+
+            if (!std::filesystem::exists(log_folder))
             {
-                if (!std::filesystem::exists(log_folder))
-                {
-                    std::filesystem::create_directory(log_folder);
-                }
+                std::filesystem::create_directory(log_folder);
+            }
 
-                std::filesystem::path log_file = log_folder / config.get("log_file_path").second;
+            std::filesystem::path log_file = log_folder / config.get("log_file_path").second;
 
-                std::ofstream file(log_file, std::ios::app);
-                if (file.is_open())
-                {
-                    file << "[" << &this->created_at << "](" << std::put_time(std::localtime(&this->created_at), "%Y-%m-%d %H:%M:%S") << ") " << this->title << ": " << this->description << "\n";
-                    file.close();
-                }
-                else
-                {
-                    std::cerr << "Unable to open log file: " << log_file << std::endl;
-                }
+            std::ofstream file(log_file, std::ios::app);
+            if (file.is_open())
+            {
+                file << "[" << &this->created_at << "](" << std::put_time(std::localtime(&this->created_at), "%Y-%m-%d %H:%M:%S") << ") " << this->title << ": " << this->description << "\n";
+                file.close();
+            }
+            else
+            {
+                std::cerr << "Unable to open log file: " << log_file << std::endl;
             }
         }
     }

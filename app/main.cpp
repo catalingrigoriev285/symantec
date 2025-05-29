@@ -101,48 +101,66 @@ void startScanning(const std::string& directory_path, ImGuiConsoleBuffer& consol
 }
 
 int main() {
-    char exePath[MAX_PATH];
+    char* exePath = new char[MAX_PATH];
     GetModuleFileNameA(NULL, exePath, MAX_PATH);
     std::string currentDir = exePath;
     currentDir = currentDir.substr(0, currentDir.find_last_of("\\/"));
+    delete[] exePath; // Dealocare memorie
+
     std::string configFilePath = currentDir + "/symantec.ini";
 
-    app::modules::configuration::Configuration &config = app::modules::configuration::Configuration::getInstance(configFilePath);
+    app::modules::configuration::Configuration* config = new app::modules::configuration::Configuration(configFilePath);
 
-    app::modules::database::sqlite::SQLite_Database db(config.get("db_path").second, config.get("db_file").second);
-    app::modules::session::Session session;
+    app::modules::database::sqlite::SQLite_Database* db = new app::modules::database::sqlite::SQLite_Database(
+        config->get("db_path").second, config->get("db_file").second);
 
-    ImGuiConsoleBuffer consoleBuffer;
-    std::ostream consoleStream(&consoleBuffer);
+    app::modules::session::Session* session = new app::modules::session::Session();
 
-    std::streambuf *oldCoutBuffer = std::cout.rdbuf(consoleStream.rdbuf());
+    ImGuiConsoleBuffer* consoleBuffer = new ImGuiConsoleBuffer();
+    std::ostream* consoleStream = new std::ostream(consoleBuffer);
+
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf(consoleStream->rdbuf());
 
     glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit())
+    if (!glfwInit()) {
+        delete config;
+        delete db;
+        delete session;
+        delete consoleBuffer;
+        delete consoleStream;
         return 1;
+    }
 
-    const char *glsl_version = "#version 130";
-    GLFWwindow *window = glfwCreateWindow(1200, 800, "Symantec Antivirus", NULL, NULL);
-    if (window == NULL)
+    const char* glsl_version = "#version 130";
+    GLFWwindow* window = glfwCreateWindow(1200, 800, "Symantec Antivirus", NULL, NULL);
+    if (window == NULL) {
+        delete config;
+        delete db;
+        delete session;
+        delete consoleBuffer;
+        delete consoleStream;
+        glfwTerminate();
         return 1;
+    }
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
+    ImGuiIO& io = ImGui::GetIO();
     (void)io;
 
-    ImGuiStyle& style = ImGui::GetStyle();
-    
-    ImFont* defaultFont = io.Fonts->AddFontDefault();
-    
-    ImFontConfig fontConfig;
-    fontConfig.SizePixels = 24.0f;
-    ImFont* largeFont = io.Fonts->AddFontDefault(&fontConfig);
-    
+    ImFontConfig* fontConfig = new ImFontConfig();
+    fontConfig->SizePixels = 20.0f; // Reduced font size
+    fontConfig->OversampleH = 3; // Higher horizontal oversampling
+    fontConfig->OversampleV = 3; // Higher vertical oversampling
+    fontConfig->PixelSnapH = false; // Disable pixel snapping for smoother rendering
+    ImFont* largeFont = io.Fonts->AddFontDefault(fontConfig);
+    delete fontConfig; // Dealocare memorie
+
     io.Fonts->Build();
 
+    ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
     colors[ImGuiCol_Text]                   = ImVec4(0.95f, 0.95f, 0.95f, 1.00f);
     colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
@@ -218,7 +236,7 @@ int main() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    std::string active_frame = "home";
+    std::string* active_frame = new std::string("home");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -250,38 +268,38 @@ int main() {
 
         if (ImGui::Button("  Home", ImVec2(buttonWidth, buttonHeight)))
         {
-            active_frame = "home";
+            *active_frame = "home";
         }
         if (ImGui::Button("  Scanning", ImVec2(buttonWidth, buttonHeight)))
         {
-            active_frame = "scanning";
+            *active_frame = "scanning";
         }
         if (ImGui::Button("  Updates", ImVec2(buttonWidth, buttonHeight)))
         {
-            active_frame = "updates";
+            *active_frame = "updates";
         }
         if (ImGui::Button("  Services", ImVec2(buttonWidth, buttonHeight)))
         {
-            active_frame = "services";
+            *active_frame = "services";
         }
         if (ImGui::Button("  Analytics", ImVec2(buttonWidth, buttonHeight))) {
-            active_frame = "analytics";
+            *active_frame = "analytics";
         }
         if (ImGui::Button("  Settings", ImVec2(buttonWidth, buttonHeight)))
         {
-            active_frame = "settings";
+            *active_frame = "settings";
         }
         if (ImGui::Button("  Administration", ImVec2(buttonWidth, buttonHeight)))
         {
-            active_frame = "administration";
+            *active_frame = "administration";
         }
         if (ImGui::Button("  Console", ImVec2(buttonWidth, buttonHeight)))
         {
-            active_frame = "console";
+            *active_frame = "console";
         }
         if (ImGui::Button("  About", ImVec2(buttonWidth, buttonHeight)))
         {
-            active_frame = "about";
+            *active_frame = "about";
         }
 
         ImGui::PopStyleVar();
@@ -318,42 +336,44 @@ int main() {
         ImGui::Dummy(ImVec2(0.0f, 20.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(20, 20));
 
-        if (active_frame == "home")
+        if (*active_frame == "home")
         {
             ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Welcome to Symantec Antivirus");
             ImGui::PopFont();
             ImGui::Dummy(ImVec2(0.0f, 20.0f));
             
-            float cardWidth = (ImGui::GetContentRegionAvail().x - 20.0f) / 3.0f;
-            float cardHeight = 120.0f;
+            float cardHeight = 160.0f; // Increased height for better visibility
             
-            ImGui::BeginChild("protection_status", ImVec2(cardWidth, cardHeight), true);
+            ImGui::BeginChild("protection_status", ImVec2(ImGui::GetContentRegionAvail().x, cardHeight), true);
+            ImGui::Dummy(ImVec2(0.0f, 5.0f)); // Add padding
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Protection Status");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            ImGui::Text("Your system is protected");
-            ImGui::Text("Last scan: Today");
+            ImGui::TextWrapped("Your system is protected");
+            ImGui::TextWrapped("Last scan: Today");
             ImGui::EndChild();
             
-            ImGui::SameLine();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f)); // Add spacing between containers
             
-            ImGui::BeginChild("statistics", ImVec2(cardWidth, cardHeight), true);
+            ImGui::BeginChild("statistics", ImVec2(ImGui::GetContentRegionAvail().x, cardHeight), true);
+            ImGui::Dummy(ImVec2(0.0f, 5.0f)); // Add padding
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Statistics");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            ImGui::Text("Files Scanned: %d", files_scanned);
-            ImGui::Text("Threats Detected: %d", threats_detected);
+            ImGui::TextWrapped("Files Scanned: %d", files_scanned);
+            ImGui::TextWrapped("Threats Detected: %d", threats_detected);
             ImGui::EndChild();
             
-            ImGui::SameLine();
+            ImGui::Dummy(ImVec2(0.0f, 10.0f)); // Add spacing between containers
             
-            ImGui::BeginChild("updates", ImVec2(cardWidth, cardHeight), true);
+            ImGui::BeginChild("updates", ImVec2(ImGui::GetContentRegionAvail().x, cardHeight), true);
+            ImGui::Dummy(ImVec2(0.0f, 5.0f)); // Add padding
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Updates");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
-            ImGui::Text("Database Updates: %d", database_updates);
-            ImGui::Text("Last update: Today");
+            ImGui::TextWrapped("Database Updates: %d", database_updates);
+            ImGui::TextWrapped("Last update: Today");
             ImGui::EndChild();
         }
-        else if (active_frame == "scanning")
+        else if (*active_frame == "scanning")
         {
             ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
             ImGui::TextColored(ImVec4(0.11f, 0.64f, 0.92f, 1.0f), "Scanning Options");
@@ -366,20 +386,20 @@ int main() {
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 10));
 
             if (ImGui::Button("Quick Scan", ImVec2(buttonWidth, buttonHeight))) {
-                std::thread scanningThread(startScanning, "C:/", std::ref(consoleBuffer), std::ref(session), std::ref(db), ScanType::Quick);
+                std::thread scanningThread(startScanning, std::string("C:/"), std::ref(*consoleBuffer), std::ref(*session), std::ref(*db), ScanType::Quick);
                 scanningThread.detach();
             }
             ImGui::SameLine();
             if (ImGui::Button("Full Scan", ImVec2(buttonWidth, buttonHeight))) {
-                std::thread scanningThread(startScanning, "C:/", std::ref(consoleBuffer), std::ref(session), std::ref(db), ScanType::Full);
+                std::thread scanningThread(startScanning, std::string("C:/"), std::ref(*consoleBuffer), std::ref(*session), std::ref(*db), ScanType::Full);
                 scanningThread.detach();
             }
             if (ImGui::Button("Custom Scan", ImVec2(buttonWidth, buttonHeight))) {
-                active_frame = "scanning_custom_frame";
+                *active_frame = "scanning_custom_frame";
             }
             ImGui::SameLine();
             if (ImGui::Button("Scheduled Scan", ImVec2(buttonWidth, buttonHeight))) {
-                std::thread scanningThread(startScanning, "C:/", std::ref(consoleBuffer), std::ref(session), std::ref(db), ScanType::Scheduled);
+                std::thread scanningThread(startScanning, std::string("C:/"), std::ref(*consoleBuffer), std::ref(*session), std::ref(*db), ScanType::Scheduled);
                 scanningThread.detach();
             }
 
@@ -391,10 +411,10 @@ int main() {
 
             if (ImGui::Selectable("View Scanning History"))
             {
-                active_frame = "scanning_history";
+                *active_frame = "scanning_history";
             }
         }
-        else if (active_frame == "scanning_custom_frame")
+        else if (*active_frame == "scanning_custom_frame")
         {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Custom Scanning");
@@ -435,7 +455,7 @@ int main() {
                 else
                 {
                     std::string directory_path_str = directory_path;
-                    std::thread scanningThread(startScanning, directory_path_str, std::ref(consoleBuffer), std::ref(session), std::ref(db), ScanType::Custom);
+                    std::thread scanningThread(startScanning, directory_path_str, std::ref(*consoleBuffer), std::ref(*session), std::ref(*db), ScanType::Custom);
                     scanningThread.detach();
                 }
             }
@@ -471,7 +491,7 @@ int main() {
                 ImGui::EndPopup();
             }
         }
-        else if (active_frame == "scanning_history")
+        else if (*active_frame == "scanning_history")
         {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Scanning History");
@@ -479,7 +499,7 @@ int main() {
             ImGui::Separator();
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-            std::vector<std::pair<std::string, std::string>> scan_history = session.getVariableVector("scan_history");
+            std::vector<std::pair<std::string, std::string>> scan_history = session->getVariableVector("scan_history");
 
             if (scan_history.empty())
             {
@@ -494,7 +514,7 @@ int main() {
                 }
             }
         }
-        else if (active_frame == "updates")
+        else if (*active_frame == "updates")
         {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Database Updates");
@@ -505,14 +525,14 @@ int main() {
             ImGui::Text("Total Updates: %d", database_updates);
             ImGui::Text("Last Update: Today");
         }
-        else if (active_frame == "services")
+        else if (*active_frame == "services")
         {
             if (ImGui::Button("Get file signature", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
-                active_frame = "services_get_file_signature";
+                *active_frame = "services_get_file_signature";
             }
         }
-        else if (active_frame == "services_get_file_signature")
+        else if (*active_frame == "services_get_file_signature")
         {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Get file signature");
@@ -641,7 +661,7 @@ int main() {
                 ImGui::EndPopup();
             }
         }
-        else if (active_frame == "settings")
+        else if (*active_frame == "settings")
         {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Logging System:");
@@ -651,7 +671,7 @@ int main() {
 
             static bool log_enabled = false;
 
-            if (config.exists() && config.get("log_enabled").second == "true")
+            if (config->exists() && config->get("log_enabled").second == "true")
             {
                 log_enabled = true;
             }
@@ -660,20 +680,20 @@ int main() {
             {
                 if (log_enabled)
                 {
-                    config.set("log_enabled", "true");
+                    config->set("log_enabled", "true");
                 }
                 else
                 {
-                    config.set("log_enabled", "false");
+                    config->set("log_enabled", "false");
                 }
-                config.save();
+                config->save();
             }
             ImGui::SameLine();
             ImGui::Text("Display logs in console");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
             static bool log_write_to_file = false;
-            if (config.exists() && config.get("log_write_to_file").second == "true")
+            if (config->exists() && config->get("log_write_to_file").second == "true")
             {
                 log_write_to_file = true;
             }
@@ -682,20 +702,20 @@ int main() {
             {
                 if (log_write_to_file)
                 {
-                    config.set("log_write_to_file", "true");
+                    config->set("log_write_to_file", "true");
                 }
                 else
                 {
-                    config.set("log_write_to_file", "false");
+                    config->set("log_write_to_file", "false");
                 }
-                config.save();
+                config->save();
             }
 
             ImGui::SameLine();
             ImGui::Text("Write logs to file");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
         }
-        else if (active_frame == "administration")
+        else if (*active_frame == "administration")
         {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Database:");
@@ -705,15 +725,15 @@ int main() {
 
             if (ImGui::Button("Add a new signature to database", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
-                active_frame = "administration_database_signatures_add";
+                *active_frame = "administration_database_signatures_add";
             }
 
             if (ImGui::Button("Load all signatures from database", ImVec2(ImGui::GetContentRegionAvail().x, buttonHeight)))
             {
-                active_frame = "administration_database_signatures_load";
+                *active_frame = "administration_database_signatures_load";
             }
         }
-        else if (active_frame == "administration_database_signatures_add")
+        else if (*active_frame == "administration_database_signatures_add")
         {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Add a new signature to database");
@@ -762,7 +782,7 @@ int main() {
 
                     try
                     {
-                        db.execute_query("INSERT INTO signatures (name, description, value, algorithm, hash) VALUES (?, ?, ?, ?, ?)",
+                        db->execute_query("INSERT INTO signatures (name, description, value, algorithm, hash) VALUES (?, ?, ?, ?, ?)",
                                          {signature.getName(), signature.getDescription(), signature.getHashString(), signature.getAlgorithmString(), "0x" + signature.getAlgorithmString()});
                     }
                     catch (const std::exception &e)
@@ -801,7 +821,7 @@ int main() {
                 ImGui::EndPopup();
             }
         }
-        else if (active_frame == "administration_database_signatures_load")
+        else if (*active_frame == "administration_database_signatures_load")
         {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Load all signatures from database");
@@ -825,15 +845,15 @@ int main() {
                 }
             }
         }
-        else if (active_frame == "console")
+        else if (*active_frame == "console")
         {
             ImGui::BeginChild("ConsoleOutput", ImVec2(0, 0), false);
             ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
-            ImGui::TextWrapped(consoleBuffer.buffer.str().c_str());
+            ImGui::TextWrapped(consoleBuffer->buffer.str().c_str());
             ImGui::PopStyleColor();
             ImGui::EndChild();
         }
-        else if (active_frame == "about")
+        else if (*active_frame == "about")
         {
             ImGui::BeginChild("AboutText", ImVec2(0, 0), false);
             ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
@@ -841,7 +861,7 @@ int main() {
             ImGui::PopStyleColor();
             ImGui::EndChild();
         }
-        else if (active_frame == "analytics") {
+        else if (*active_frame == "analytics") {
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
             ImGui::Text("Running Processes");
             ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -878,6 +898,13 @@ int main() {
 
         glfwSwapBuffers(window);
     }
+
+    delete active_frame;
+    delete config;
+    delete db;
+    delete session;
+    delete consoleBuffer;
+    delete consoleStream;
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

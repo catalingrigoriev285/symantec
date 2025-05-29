@@ -25,15 +25,12 @@ namespace app::core::analytics
             do
             {
 #ifdef UNICODE
-                // Convert TCHAR (wchar_t) to std::string
                 std::wstring wExeFile(pe32.szExeFile);
                 std::string exeFile = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(wExeFile);
 #else
-                // Convert TCHAR (char) to std::string
                 std::string exeFile(pe32.szExeFile);
 #endif
-                // Check if the process name matches known virus patterns
-                if (exeFile == "malware.exe" || exeFile == "virus.exe") // Example patterns
+                if (false)
                 {
                     exeFile += " [Potential Virus]";
                 }

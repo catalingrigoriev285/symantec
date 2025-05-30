@@ -53,6 +53,8 @@ namespace app::modules::database
         std::string get_database();
         std::string get_user();
         std::string get_password();
+
+        void execute_query(const std::string &query);
     };
 }
 

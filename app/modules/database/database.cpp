@@ -110,4 +110,18 @@ namespace app::modules::database
     {
         return this->db_password;
     }
+
+    void Database::execute_query(const std::string &query)
+    {
+        try
+        {
+            SQLite::Database db(db_path + "/" + db_file, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+            SQLite::Statement statement(db, query);
+            statement.exec();
+        }
+        catch (const std::exception &e)
+        {
+            app::models::logs::Logs log("Database", e.what(), app::models::logs::enum_log_type::ERROR);
+        }
+    }
 }

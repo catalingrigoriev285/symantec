@@ -2,6 +2,8 @@
 
 Symantec is an open-source antivirus software developed as a university project. Designed to detect, prevent, and remove malware, it provides essential security features such as real-time scanning, manual scans, and quarantine management.
 
+![symantec_222600.png](assets/symantec_222600.png)
+
 ## Features
 
 - **Real-Time Scanning:** Continuously monitors files and processes for malicious activity.
